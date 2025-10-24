@@ -44,10 +44,11 @@ const MenuPasajero = () => {
       return (
         <div className="layout">
           <button 
-            className="mobile-menu-btn"
+            className={`mobile-menu-btn ${sidebarOpen ? 'open' : ''}`}
             onClick={() => setSidebarOpen(!sidebarOpen)}
           >
-            ☰
+            <span className="menu-text">Wheels</span>
+            <span className="menu-icon">{sidebarOpen ? '✕' : '☰'}</span>
           </button>
           {sidebarOpen && (
             <div 
@@ -56,9 +57,11 @@ const MenuPasajero = () => {
             ></div>
           )}
           <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
-        <div className="logo">
-          <h2>Wheels</h2>
-        </div>
+            <div className="sidebar-header">
+              <div className="logo">
+                <h2>Wheels</h2>
+              </div>
+            </div>
         <nav>
           <Link to="/menu" className="nav-link">
             🏠 Inicio
