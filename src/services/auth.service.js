@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://bewheels.onrender.com/api';
+const API_BASE_URL = 'https://bewheels-xmjl.onrender.com/api';
 
 class AuthService {
   constructor() {
