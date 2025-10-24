@@ -41,15 +41,21 @@ const MenuPasajero = () => {
     );
   }
 
-  return (
-    <div className="layout">
-      <button 
-        className="mobile-menu-btn"
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-      >
-        ☰
-      </button>
-      <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+      return (
+        <div className="layout">
+          <button 
+            className="mobile-menu-btn"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+          >
+            ☰
+          </button>
+          {sidebarOpen && (
+            <div 
+              className="sidebar-overlay active"
+              onClick={() => setSidebarOpen(false)}
+            ></div>
+          )}
+          <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="logo">
           <h2>Wheels</h2>
         </div>
