@@ -33,13 +33,17 @@ class AuthService {
     } catch (error) {
       console.error('Error completo en login:', error);
       let errorMessage = 'Error al iniciar sesión';
-      if (error.response?.data?.error) {
+      
+      if (error.code === 'ERR_NETWORK') {
+        errorMessage = 'Error de conexión. Verifica que el servidor esté funcionando.';
+      } else if (error.response?.data?.error) {
         errorMessage = error.response.data.error;
       } else if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
       } else if (error.message) {
         errorMessage = error.message;
       }
+      
       return { success: false, error: errorMessage };
     }
   }
@@ -79,19 +83,19 @@ class AuthService {
 
   async verificarToken() {
     try {
-      if (!this.token) {
+      const token = this.getToken();
+      if (!token) {
         return { success: false, error: 'No hay token' };
       }
       
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       const response = await axios.get(`${API_BASE_URL}/auth/verificar-token`);
-      this.user = response.data.usuario;
-      localStorage.setItem('user', JSON.stringify(this.user));
-      
-      return { success: true, usuario: this.user };
+      localStorage.setItem('user', JSON.stringify(response.data.usuario));
+      return { success: true, usuario: response.data.usuario };
     } catch (error) {
       console.error('Error verificando token:', error);
       this.logout();
-      return { success: false, error: 'Token inválido' };
+      return { success: false, error: 'Token inválido o expirado' };
     }
   }
 
