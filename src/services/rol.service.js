@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://bewheels-xmjl.onrender.com/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL;
 
 class RolService {
   async getRolesByUserId(id_usuario) {

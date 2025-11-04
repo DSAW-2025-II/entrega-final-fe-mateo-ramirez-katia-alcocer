@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://bewheels-xmjl.onrender.com/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL;
 
 class AuthService {
   constructor() {
@@ -119,6 +119,61 @@ class AuthService {
 
   getToken() {
     return localStorage.getItem('token');
+  }
+
+  async getProfile() {
+    try {
+      const token = this.getToken();
+      if (!token) return { success: false, error: 'No autenticado' };
+
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      const response = await axios.get(`${API_BASE_URL}/usuarios/mi-perfil`);
+      const perfil = response.data?.usuario || response.data;
+      if (perfil) {
+        localStorage.setItem('user', JSON.stringify(perfil));
+        this.user = perfil;
+      }
+      return { success: true, data: perfil };
+    } catch (error) {
+      console.error('Error obteniendo perfil:', error);
+      return { success: false, error: error.response?.data?.error || 'Error al obtener el perfil' };
+    }
+  }
+
+  async updateProfile(datos) {
+    try {
+      const token = this.getToken();
+      if (!token) return { success: false, error: 'No autenticado' };
+
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+      // Usar FormData si hay archivo, o enviar JSON si no.
+      const hasFile = datos && Object.values(datos).some(v => v instanceof File || (v && v.type && v.size));
+      let payload;
+      let headers = {};
+      if (hasFile) {
+        payload = new FormData();
+        Object.entries(datos).forEach(([k, v]) => {
+          if (v !== undefined && v !== null) payload.append(k, v);
+        });
+        headers['Content-Type'] = 'multipart/form-data';
+      } else {
+        payload = datos;
+        headers['Content-Type'] = 'application/json';
+      }
+
+      const response = await axios.put(`${API_BASE_URL}/usuarios/mi-perfil`, payload, { headers });
+      const perfilActualizado = response.data?.usuario || response.data;
+      if (perfilActualizado) {
+        localStorage.setItem('user', JSON.stringify(perfilActualizado));
+        this.user = perfilActualizado;
+      }
+      return { success: true, data: perfilActualizado };
+    } catch (error) {
+      console.error('Error actualizando perfil:', error);
+      let errorMessage = error.response?.data?.error || error.response?.data?.message || 'Error al actualizar el perfil';
+      return { success: false, error: errorMessage };
+    }
   }
 }
 

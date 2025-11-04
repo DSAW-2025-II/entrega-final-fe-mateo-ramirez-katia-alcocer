@@ -12,6 +12,7 @@ import MisVehiculos from "./components/MisVehiculos";
 import Login from "./components/Login";
 import Registro from "./components/Registro";
 import RegistrarVehiculo from "./components/RegistrarVehiculo";
+import Perfil from "./components/Perfil";
 
 function App() {
   const [mensaje, setMensaje] = useState("Cargando...");
@@ -54,6 +55,7 @@ function App() {
             <Route path="/mis-reservas" element={<MisReservas />} />
             <Route path="/mis-vehiculos" element={<MisVehiculos />} />
             <Route path="/registrar-vehiculo" element={<RegistrarVehiculo />} />
+            <Route path="/perfil" element={<Perfil />} />
       </Routes>
     </Router>
   );
