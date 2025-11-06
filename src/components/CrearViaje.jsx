@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import authService from '../services/auth.service.js';
 import viajeService from '../services/viaje.service.js';
 import vehiculoService from '../services/vehiculo.service.js';
+import UbicacionSelector from './UbicacionSelector.jsx';
 import '../App.css';
 
 const CrearViaje = () => {
@@ -51,9 +52,43 @@ const CrearViaje = () => {
       [name]: value
     });
     
+    // Si cambia el vehículo, resetear los cupos
+    if (name === 'id_vehiculo') {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value,
+        cupos_totales: '' // Resetear cupos cuando cambia vehículo
+      }));
+    }
+    
     if (error) {
       setError('');
     }
+  };
+
+  // Función para obtener el vehículo seleccionado
+  const getVehiculoSeleccionado = () => {
+    return vehiculos.find(v => v.id_vehiculo === parseInt(formData.id_vehiculo));
+  };
+
+  // Función para generar opciones de cupos basadas en la capacidad del vehículo
+  const generarOpcionesCupos = () => {
+    const vehiculoSeleccionado = getVehiculoSeleccionado();
+    if (!vehiculoSeleccionado) return [];
+    
+    const capacidad = vehiculoSeleccionado.capacidad;
+    const opciones = [];
+    
+    // Generar opciones desde 1 hasta la capacidad del vehículo
+    for (let i = 1; i <= capacidad; i++) {
+      opciones.push(
+        <option key={i} value={i}>
+          {i} {i === 1 ? 'pasajero' : 'pasajeros'}
+        </option>
+      );
+    }
+    
+    return opciones;
   };
 
   const handleSubmit = async (e) => {
@@ -87,8 +122,11 @@ const CrearViaje = () => {
     }
 
     const cupos = parseInt(formData.cupos_totales);
-    if (isNaN(cupos) || cupos < 1 || cupos > 6) {
-      setError('Los cupos deben estar entre 1 y 6 personas');
+    const vehiculoSeleccionado = getVehiculoSeleccionado();
+    const capacidadMaxima = vehiculoSeleccionado?.capacidad || 0;
+    
+    if (isNaN(cupos) || cupos < 1 || cupos > capacidadMaxima) {
+      setError(`Los cupos deben estar entre 1 y ${capacidadMaxima} personas (capacidad del vehículo)`);
       setLoading(false);
       return;
     }
@@ -191,28 +229,26 @@ const CrearViaje = () => {
             <form onSubmit={handleSubmit} className="form">
           <div className="form-group">
             <label htmlFor="origen">Origen</label>
-            <input
-              type="text"
-              id="origen"
+            <UbicacionSelector
               name="origen"
               value={formData.origen}
               onChange={handleChange}
-              placeholder="¿Desde dónde sales?"
+              placeholder="¿Desde dónde sales? (ej: Universidad de La Sabana)"
               required
             />
+            <small>Selecciona o escribe una nueva ubicación de origen</small>
           </div>
           
           <div className="form-group">
             <label htmlFor="destino">Destino</label>
-            <input
-              type="text"
-              id="destino"
+            <UbicacionSelector
               name="destino"
               value={formData.destino}
               onChange={handleChange}
-              placeholder="¿Hacia dónde vas?"
+              placeholder="¿Hacia dónde vas? (ej: Centro Comercial Unicentro)"
               required
             />
+            <small>Selecciona o escribe una nueva ubicación de destino</small>
           </div>
           
           <div className="form-group">
@@ -235,16 +271,19 @@ const CrearViaje = () => {
               value={formData.cupos_totales}
               onChange={handleChange}
               required
+              disabled={!formData.id_vehiculo}
             >
-              <option value="">Selecciona cupos</option>
-              <option value="1">1 pasajero</option>
-              <option value="2">2 pasajeros</option>
-              <option value="3">3 pasajeros</option>
-              <option value="4">4 pasajeros</option>
-              <option value="5">5 pasajeros</option>
-              <option value="6">6 pasajeros</option>
+              <option value="">
+                {!formData.id_vehiculo ? 'Primero selecciona un vehículo' : 'Selecciona cupos'}
+              </option>
+              {generarOpcionesCupos()}
             </select>
-            <small>Máximo 6 pasajeros</small>
+            <small>
+              {formData.id_vehiculo ? 
+                `Capacidad del vehículo: ${getVehiculoSeleccionado()?.capacidad || 0} pasajeros` :
+                'Selecciona un vehículo para ver los cupos disponibles'
+              }
+            </small>
           </div>
           
           <div className="form-group">
@@ -279,7 +318,7 @@ const CrearViaje = () => {
                 </option>
               ))}
             </select>
-            <small>Selecciona el vehículo para este viaje</small>
+            <small>La capacidad del vehículo determina los cupos máximos disponibles</small>
           </div>
           
           <div className="form-actions">
