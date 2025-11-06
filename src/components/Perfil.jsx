@@ -13,6 +13,10 @@ const Perfil = () => {
   const [fotoFile, setFotoFile] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [changePassword, setChangePassword] = useState(false);
 
   useEffect(() => {
     const init = async () => {
@@ -64,14 +68,37 @@ const Perfil = () => {
     setError('');
     setSuccess('');
 
+    // Validar contraseñas si se quiere cambiar
+    if (changePassword) {
+      if (!newPassword) {
+        setError('Debes ingresar la nueva contraseña');
+        setSaving(false);
+        return;
+      }
+      if (newPassword.length < 8) {
+        setError('La contraseña debe tener al menos 8 caracteres');
+        setSaving(false);
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        setError('Las contraseñas no coinciden');
+        setSaving(false);
+        return;
+      }
+    }
+
     const payload = { ...perfil };
     if (fotoFile) payload.foto_perfil = fotoFile;
+    if (changePassword && newPassword) payload.contrasena = newPassword;
 
     const res = await authService.updateProfile(payload);
     if (res.success) {
       setPerfil(res.data);
       setSuccess('Perfil actualizado correctamente');
       setFotoFile(null);
+      setNewPassword('');
+      setConfirmPassword('');
+      setChangePassword(false);
       setTimeout(() => setSuccess(''), 3000);
     } else {
       setError(res.error || 'No se pudo actualizar el perfil');
@@ -283,6 +310,72 @@ const Perfil = () => {
                     required
                   />
                 </div>
+
+                {/* Sección para cambiar contraseña */}
+                <div className="form-group">
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <input 
+                      type="checkbox"
+                      checked={changePassword}
+                      onChange={(e) => {
+                        setChangePassword(e.target.checked);
+                        if (!e.target.checked) {
+                          setNewPassword('');
+                          setConfirmPassword('');
+                        }
+                      }}
+                    />
+                    Cambiar contraseña
+                  </label>
+                </div>
+
+                {changePassword && (
+                  <>
+                    <div className="form-group">
+                      <label>Nueva contraseña</label>
+                      <div style={{ position: 'relative' }}>
+                        <input 
+                          type={showPassword ? 'text' : 'password'}
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          placeholder="Ingresa tu nueva contraseña"
+                          minLength={8}
+                          style={{ paddingRight: '40px' }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          style={{
+                            position: 'absolute',
+                            right: '10px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            fontSize: '16px'
+                          }}
+                        >
+                          {showPassword ? '👁️' : '👁️‍🗨️'}
+                        </button>
+                      </div>
+                      <small style={{ color: '#666', fontSize: '0.85rem' }}>
+                        Mínimo 8 caracteres
+                      </small>
+                    </div>
+
+                    <div className="form-group">
+                      <label>Confirmar nueva contraseña</label>
+                      <input 
+                        type={showPassword ? 'text' : 'password'}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Confirma tu nueva contraseña"
+                        minLength={8}
+                      />
+                    </div>
+                  </>
+                )}
 
                 <button type="submit" className="btn-primary" disabled={saving} style={{ marginTop: '1rem' }}>
                   {saving ? 'Guardando...' : '💾 Guardar cambios'}
