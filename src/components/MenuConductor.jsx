@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import authService from "../services/auth.service.js";
+import { getImageUrl } from '../utils/imageUtils.js';
 import "../App.css";
 
 const MenuConductor = () => {
@@ -92,7 +93,7 @@ const MenuConductor = () => {
           <div className="user-avatar">
             {usuario?.foto_perfil ? (
               <img 
-                src={usuario.foto_perfil.startsWith('http') ? usuario.foto_perfil : `http://localhost:3001${usuario.foto_perfil}`} 
+                src={getImageUrl(usuario.foto_perfil)} 
                 alt="Avatar" 
                 onError={(e) => {
                   e.target.style.display = 'none';

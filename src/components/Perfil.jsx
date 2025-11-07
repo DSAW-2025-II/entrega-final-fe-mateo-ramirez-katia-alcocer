@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import authService from '../services/auth.service.js';
+import { getImageUrl } from '../utils/imageUtils.js';
 import '../App.css';
 
 const Perfil = () => {
@@ -30,7 +31,7 @@ const Perfil = () => {
       if (res.success) {
         setPerfil(res.data);
         if (res.data?.foto_perfil) {
-          setPreviewUrl(res.data.foto_perfil.startsWith('http') ? res.data.foto_perfil : `http://localhost:3001${res.data.foto_perfil}`);
+          setPreviewUrl(getImageUrl(res.data.foto_perfil));
         }
       } else {
         // Si falla el endpoint específico, usar el usuario del almacenamiento local como fallback
@@ -38,7 +39,7 @@ const Perfil = () => {
         if (user) {
           setPerfil(user);
           if (user?.foto_perfil) {
-            setPreviewUrl(user.foto_perfil.startsWith('http') ? user.foto_perfil : `http://localhost:3001${user.foto_perfil}`);
+            setPreviewUrl(getImageUrl(user.foto_perfil));
           }
         }
         setError(res.error);
@@ -169,7 +170,7 @@ const Perfil = () => {
           <div className="user-avatar">
             {perfil?.foto_perfil ? (
               <img 
-                src={perfil.foto_perfil.startsWith('http') ? perfil.foto_perfil : `http://localhost:3001${perfil.foto_perfil}`} 
+                src={getImageUrl(perfil.foto_perfil)} 
                 alt="Avatar" 
                 onError={(e) => {
                   e.target.style.display = 'none';
