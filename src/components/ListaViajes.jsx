@@ -159,7 +159,7 @@ const ListaViajes = () => {
               🚗 Viajes Disponibles
             </Link>
             <Link to="/mis-reservas" className="nav-link">
-              📋 Mis Reservas (Hoy)
+              📋 Mis Reservas
             </Link>
             <Link to="/perfil" className="nav-link">
               👤 Mi Perfil
@@ -186,13 +186,8 @@ const ListaViajes = () => {
       {/* Main Content */}
       <div className="main-content">
         <div className="viajes-header">
-          <h1>Viajes Disponibles - Hoy</h1>
-          <p>Encuentra viajes para el día de hoy ({new Date().toLocaleDateString('es-CO', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-          })})</p>
+    <h1>Viajes Disponibles</h1>
+          <p>Encuentra viajes disponibles para reservar</p>
         </div>
 
         {/* Filtros */}
@@ -342,8 +337,8 @@ const ListaViajes = () => {
           onReservar={handleReservarViaje}
         />
       )}
-    </div>
-  );
+  </div>
+);
 };
 
 export default ListaViajes;

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import authService from '../services/auth.service.js';
 import vehiculoService from '../services/vehiculo.service.js';
+import { getImageUrl } from '../utils/imageUtils.js';
 import '../App.css';
 
 const MisVehiculos = () => {
@@ -195,7 +196,7 @@ const MisVehiculos = () => {
                 <div className="vehiculo-image">
                   {vehiculo.foto ? (
                     <img 
-                      src={vehiculo.foto.startsWith('http') ? vehiculo.foto : `http://localhost:3001${vehiculo.foto}`} 
+                      src={getImageUrl(vehiculo.foto)} 
                       alt={`${vehiculo.marca} ${vehiculo.modelo}`}
                       onError={(e) => {
                         e.target.style.display = 'none';

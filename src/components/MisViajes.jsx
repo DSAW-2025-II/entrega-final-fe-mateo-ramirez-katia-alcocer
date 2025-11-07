@@ -43,25 +43,16 @@ const MisViajes = () => {
   const puedeModificarViaje = (viaje) => {
     const fechaViaje = new Date(viaje.fecha_salida);
     const ahora = new Date();
-    const horasRestantes = (fechaViaje - ahora) / (1000 * 60 * 60); // Diferencia en horas
+    const minutosRestantes = (fechaViaje - ahora) / (1000 * 60); // Diferencia en minutos
     
-    // Debug para ver qué está pasando
-    console.log('=== DEBUG CANCELAR VIAJE ===');
-    console.log('Fecha del viaje:', viaje.fecha_salida);
-    console.log('Fecha parseada:', fechaViaje);
-    console.log('Fecha actual:', ahora);
-    console.log('Horas restantes:', horasRestantes);
-    console.log('Puede modificar:', horasRestantes > 1);
-    console.log('==========================');
-    
-    return horasRestantes > 1; // Más de 1 hora de anticipación
+    return minutosRestantes > 15; // Más de 15 minutos de anticipación
   };
 
   const handleCancelarViaje = async (id_viaje) => {
     const viaje = viajes.find(v => v.id_viaje === id_viaje);
     
     if (!puedeModificarViaje(viaje)) {
-      alert('Solo puedes cancelar el viaje si faltan más de 1 hora para la salida');
+      alert('Solo puedes cancelar el viaje si faltan más de 15 minutos para la salida');
       return;
     }
 
@@ -196,7 +187,7 @@ const MisViajes = () => {
             🚗 Viajes Disponibles
           </Link>
           <Link to="/mis-reservas" className="nav-link">
-            📋 Mis Reservas (Hoy)
+            📋 Mis Reservas
           </Link>
           <Link to="/mis-vehiculos" className="nav-link">
             🚙 Mis Vehículos
@@ -225,13 +216,8 @@ const MisViajes = () => {
 
       <main className="main-content">
         <div className="welcome-section">
-          <h1>Mis Viajes - Hoy</h1>
-          <p>Aquí puedes ver y gestionar tus viajes del día de hoy ({new Date().toLocaleDateString('es-CO', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-          })})</p>
+          <h1>Mis Viajes</h1>
+          <p>Aquí puedes ver y gestionar tus viajes futuros</p>
         </div>
 
         {error && <div className="error-message">{error}</div>}
@@ -239,8 +225,8 @@ const MisViajes = () => {
         <div className="viajes-grid">
           {viajes.length === 0 ? (
             <div className="no-results">
-              <h3>No tienes viajes para hoy</h3>
-              <p>¡Anímate a ofrecer un viaje para el día de hoy!</p>
+              <h3>No tienes viajes programados</h3>
+              <p>¡Anímate a ofrecer un viaje!</p>
               <Link to="/viajes/crear" className="btn-primary" style={{marginTop: '1rem'}}>
                 Crear Nuevo Viaje
               </Link>
@@ -291,7 +277,7 @@ const MisViajes = () => {
                         className="btn-danger"
                         onClick={() => handleCancelarViaje(viaje.id_viaje)}
                         disabled={!puedeModificarViaje(viaje)}
-                        title={!puedeModificarViaje(viaje) ? "Solo se puede cancelar si faltan más de 1 hora para la salida" : ""}
+                        title={!puedeModificarViaje(viaje) ? "Solo se puede cancelar si faltan más de 15 minutos para la salida" : ""}
                       >
                         ❌ Cancelar Viaje
                       </button>

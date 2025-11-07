@@ -6,7 +6,8 @@ const getServerBaseUrl = () => {
   if (process.env.REACT_APP_API_URL) {
     return process.env.REACT_APP_API_URL.replace('/api', '');
   }
-  return 'http://localhost:5000';
+  // Fallback a la URL del backend desplegado
+  return 'https://bewheels-xmjl.onrender.com';
 };
 
 /**
