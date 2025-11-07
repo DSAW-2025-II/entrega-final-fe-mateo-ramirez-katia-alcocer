@@ -122,8 +122,19 @@ const CrearViaje = () => {
       return;
     }
 
-    if (new Date(formData.fecha_salida) <= new Date()) {
+    const fechaViaje = new Date(formData.fecha_salida);
+    const ahora = new Date();
+    const horasMinimas = 2;
+    const diferenciaHoras = (fechaViaje - ahora) / (1000 * 60 * 60);
+    
+    if (fechaViaje <= ahora) {
       setError('La fecha de salida debe ser futura');
+      setLoading(false);
+      return;
+    }
+    
+    if (diferenciaHoras < horasMinimas) {
+      setError(`La fecha de salida debe ser al menos ${horasMinimas} horas en el futuro`);
       setLoading(false);
       return;
     }

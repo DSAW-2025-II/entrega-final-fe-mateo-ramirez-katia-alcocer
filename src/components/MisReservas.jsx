@@ -55,7 +55,7 @@ const MisReservas = () => {
     const reserva = reservas.find(r => r.id_reserva === id_reserva);
     
     if (!puedeEliminar(reserva)) {
-      alert('Solo puedes eliminar la reserva si faltan más de 1 hora para la salida');
+      alert('Solo puedes eliminar la reserva si faltan más de 2 horas para la salida');
       return;
     }
 
@@ -103,16 +103,18 @@ const MisReservas = () => {
   };
 
   const puedeCancelar = (reserva) => {
-    return ['Pendiente', 'Aceptada'].includes(reserva.estado) && 
-           new Date(reserva.fecha_salida) > new Date();
+    const fechaViaje = new Date(reserva.fecha_salida);
+    const ahora = new Date();
+    const horasRestantes = (fechaViaje - ahora) / (1000 * 60 * 60); // Diferencia en horas
+    // Solo se puede cancelar si faltan más de 2 horas para la salida
+    return reserva.estado === 'Aceptada' && horasRestantes > 2;
   };
 
   const puedeEliminar = (reserva) => {
     const fechaViaje = new Date(reserva.fecha_salida);
     const ahora = new Date();
     const horasRestantes = (fechaViaje - ahora) / (1000 * 60 * 60); // Diferencia en horas
-    
-    return ['Pendiente', 'Aceptada'].includes(reserva.estado) && horasRestantes > 1;
+    return reserva.estado === 'Aceptada' && horasRestantes > 2;
   };
 
   if (loading) {
@@ -137,7 +139,7 @@ const MisReservas = () => {
               🚗 Viajes Disponibles
             </Link>
             <Link to="/mis-reservas" className="nav-link active">
-              📋 Mis Reservas (Hoy)
+              📋 Mis Reservas
             </Link>
             <Link to="/mis-vehiculos" className="nav-link">
               🚙 Mis Vehículos
@@ -228,13 +230,8 @@ const MisReservas = () => {
 
       <main className="main-content">
         <div className="welcome-section">
-          <h1>Mis Reservas - Hoy</h1>
-          <p>Aquí puedes ver y gestionar tus reservas pendientes y aceptadas para el día de hoy ({new Date().toLocaleDateString('es-CO', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-          })})</p>
+          <h1>Mis Reservas</h1>
+          <p>Aquí puedes ver y gestionar tus reservas confirmadas</p>
         </div>
 
         {error && <div className="error-message">{error}</div>}
@@ -242,8 +239,8 @@ const MisReservas = () => {
         <div className="viajes-grid">
           {reservas.length === 0 ? (
             <div className="no-results">
-              <h3>No tienes reservas para hoy</h3>
-              <p>¡Explora los viajes disponibles para el día de hoy y haz tu primera reserva!</p>
+              <h3>No tienes reservas</h3>
+              <p>¡Explora los viajes disponibles y haz tu primera reserva!</p>
               <Link to="/viajes" className="btn-primary" style={{marginTop: '1rem'}}>
                 Ver Viajes Disponibles
               </Link>
@@ -322,9 +319,9 @@ const MisReservas = () => {
                         🗑️ Eliminar
                       </button>
                     )}
-                    {!puedeEliminar(reserva) && ['Pendiente', 'Aceptada'].includes(reserva.estado) && (
+                    {!puedeEliminar(reserva) && reserva.estado === 'Aceptada' && (
                       <span className="tiempo-limite">
-                        ⏰ Solo se puede eliminar si faltan más de 1 hora
+                        ⏰ Solo se puede eliminar si faltan más de 2 horas
                       </span>
                     )}
                   </div>

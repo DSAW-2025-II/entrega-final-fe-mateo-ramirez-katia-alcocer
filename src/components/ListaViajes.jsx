@@ -100,7 +100,7 @@ const ListaViajes = () => {
   const handleReservaCreada = () => {
     // Recargar los viajes para actualizar cupos
     cargarViajes();
-    alert('¡Reserva enviada con éxito! El conductor recibirá tu solicitud.');
+    alert('¡Reserva confirmada exitosamente! Tu cupo ha sido reservado automáticamente.');
   };
 
   const puedeReservar = (viaje) => {
