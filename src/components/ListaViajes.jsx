@@ -186,8 +186,13 @@ const ListaViajes = () => {
       {/* Main Content */}
       <div className="main-content">
         <div className="viajes-header">
-          <h1>Viajes Disponibles</h1>
-          <p>Encuentra el viaje perfecto para tu destino</p>
+          <h1>Viajes Disponibles - Hoy</h1>
+          <p>Encuentra viajes para el día de hoy ({new Date().toLocaleDateString('es-CO', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          })})</p>
         </div>
 
         {/* Filtros */}
