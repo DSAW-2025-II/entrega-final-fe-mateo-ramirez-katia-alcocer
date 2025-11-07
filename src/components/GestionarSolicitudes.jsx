@@ -197,7 +197,7 @@ const GestionarSolicitudes = () => {
             reservas.map(reserva => (
               <div key={reserva.id_reserva} className="viaje-card">
                 <div className="viaje-header">
-                  <h3>{reserva.viaje?.origen} → {reserva.viaje?.destino}</h3>
+                  <h3>{reserva.origen} → {reserva.destino}</h3>
                   <span 
                     className={`viaje-estado ${reserva.estado?.toLowerCase()}`}
                     style={{ color: getColorEstado(reserva.estado) }}
@@ -208,32 +208,36 @@ const GestionarSolicitudes = () => {
                 <div className="viaje-info">
                   <div className="info-item">
                     <span className="info-label">👤 Pasajero:</span>
-                    <span>{reserva.usuario?.nombre || 'Usuario'}</span>
+                    <span>{reserva.nombre_pasajero || 'Usuario'}</span>
                   </div>
                   <div className="info-item">
                     <span className="info-label">📅 Fecha del viaje:</span>
-                    <span>{formatearFecha(reserva.viaje?.fecha_salida)}</span>
+                    <span>{formatearFecha(reserva.fecha_salida)}</span>
                   </div>
                   <div className="info-item">
                     <span className="info-label">📝 Solicitado:</span>
-                    <span>{formatearFecha(reserva.fecha_solicitud)}</span>
+                    <span>{formatearFecha(reserva.fecha_reserva)}</span>
                   </div>
                   <div className="info-item">
                     <span className="info-label">💲 Tarifa:</span>
-                    <span>${reserva.viaje?.tarifa?.toLocaleString()}</span>
+                    <span>${reserva.tarifa?.toLocaleString()}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">🪑 Cupos solicitados:</span>
+                    <span>{reserva.cupos_reservados}</span>
                   </div>
                   <div className="info-item">
                     <span className="info-label">📍 Recogida:</span>
-                    <span>{reserva.ubicacion_recogida?.nombre || 'Por definir'}</span>
+                    <span>{reserva.punto_recogida || 'Por definir'}</span>
                   </div>
                   <div className="info-item">
                     <span className="info-label">📍 Destino:</span>
-                    <span>{reserva.ubicacion_destino?.nombre || 'Por definir'}</span>
+                    <span>{reserva.destino}</span>
                   </div>
-                  {reserva.usuario?.telefono && (
+                  {reserva.telefono_pasajero && (
                     <div className="info-item">
                       <span className="info-label">📞 Teléfono:</span>
-                      <span>{reserva.usuario.telefono}</span>
+                      <span>{reserva.telefono_pasajero}</span>
                     </div>
                   )}
                 </div>
