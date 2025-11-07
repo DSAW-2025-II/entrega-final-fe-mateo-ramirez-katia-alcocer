@@ -51,6 +51,27 @@ const MisReservas = () => {
     }
   };
 
+  const handleEliminarReserva = async (id_reserva) => {
+    const reserva = reservas.find(r => r.id_reserva === id_reserva);
+    
+    if (!puedeEliminar(reserva)) {
+      alert('Solo puedes eliminar la reserva si faltan más de 1 hora para la salida');
+      return;
+    }
+
+    if (!window.confirm('¿Estás seguro de que quieres ELIMINAR esta reserva? Esta acción no se puede deshacer y se notificará al conductor.')) {
+      return;
+    }
+
+    const result = await reservaService.eliminarReserva(id_reserva);
+    if (result.success) {
+      alert('Reserva eliminada exitosamente');
+      cargarReservas(); // Recargar la lista
+    } else {
+      alert(`Error al eliminar reserva: ${result.error}`);
+    }
+  };
+
   const formatearFecha = (fecha) => {
     return new Date(fecha).toLocaleString('es-CO', {
       year: 'numeric',
@@ -86,6 +107,14 @@ const MisReservas = () => {
            new Date(reserva.fecha_salida) > new Date();
   };
 
+  const puedeEliminar = (reserva) => {
+    const fechaViaje = new Date(reserva.fecha_salida);
+    const ahora = new Date();
+    const horasRestantes = (fechaViaje - ahora) / (1000 * 60 * 60); // Diferencia en horas
+    
+    return ['Pendiente', 'Aceptada'].includes(reserva.estado) && horasRestantes > 1;
+  };
+
   if (loading) {
     return (
       <div className="layout">
@@ -108,7 +137,7 @@ const MisReservas = () => {
               🚗 Viajes Disponibles
             </Link>
             <Link to="/mis-reservas" className="nav-link active">
-              📋 Mis Reservas
+              📋 Mis Reservas (Hoy)
             </Link>
             <Link to="/mis-vehiculos" className="nav-link">
               🚙 Mis Vehículos
@@ -170,7 +199,7 @@ const MisReservas = () => {
             🚗 Viajes Disponibles
           </Link>
           <Link to="/mis-reservas" className="nav-link active">
-            📋 Mis Reservas
+            📋 Mis Reservas (Hoy)
           </Link>
           <Link to="/mis-vehiculos" className="nav-link">
             🚙 Mis Vehículos
@@ -199,8 +228,13 @@ const MisReservas = () => {
 
       <main className="main-content">
         <div className="welcome-section">
-          <h1>Mis Reservas</h1>
-          <p>Aquí puedes ver y gestionar tus reservas como pasajero.</p>
+          <h1>Mis Reservas - Hoy</h1>
+          <p>Aquí puedes ver y gestionar tus reservas pendientes y aceptadas para el día de hoy ({new Date().toLocaleDateString('es-CO', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          })})</p>
         </div>
 
         {error && <div className="error-message">{error}</div>}
@@ -208,8 +242,8 @@ const MisReservas = () => {
         <div className="viajes-grid">
           {reservas.length === 0 ? (
             <div className="no-results">
-              <h3>No tienes reservas activas</h3>
-              <p>¡Explora los viajes disponibles y haz tu primera reserva!</p>
+              <h3>No tienes reservas para hoy</h3>
+              <p>¡Explora los viajes disponibles para el día de hoy y haz tu primera reserva!</p>
               <Link to="/viajes" className="btn-primary" style={{marginTop: '1rem'}}>
                 Ver Viajes Disponibles
               </Link>
@@ -218,7 +252,7 @@ const MisReservas = () => {
             reservas.map(reserva => (
               <div key={reserva.id_reserva} className="viaje-card">
                 <div className="viaje-header">
-                  <h3>{reserva.viaje?.origen} → {reserva.viaje?.destino}</h3>
+                  <h3>{reserva.origen} → {reserva.destino}</h3>
                   <span 
                     className={`viaje-estado ${reserva.estado?.toLowerCase()}`}
                     style={{ color: getColorEstado(reserva.estado) }}
@@ -229,40 +263,71 @@ const MisReservas = () => {
                 <div className="viaje-info">
                   <div className="info-item">
                     <span className="info-label">📅 Fecha:</span>
-                    <span>{formatearFecha(reserva.viaje?.fecha_salida)}</span>
+                    <span>{formatearFecha(reserva.fecha_salida)}</span>
                   </div>
                   <div className="info-item">
                     <span className="info-label">👤 Conductor:</span>
-                    <span>{reserva.viaje?.conductor?.nombre || 'Conductor'}</span>
+                    <span>{reserva.nombre_conductor}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">🚗 Vehículo:</span>
+                    <span>{reserva.marca} {reserva.modelo} - {reserva.placa}</span>
                   </div>
                   <div className="info-item">
                     <span className="info-label">💲 Tarifa:</span>
-                    <span>${reserva.viaje?.tarifa?.toLocaleString()}</span>
+                    <span>${reserva.tarifa?.toLocaleString('es-CO')}</span>
                   </div>
                   <div className="info-item">
-                    <span className="info-label">📍 Recogida:</span>
-                    <span>{reserva.ubicacion_recogida?.nombre || 'Por definir'}</span>
+                    <span className="info-label">🪑 Cupos reservados:</span>
+                    <span>{reserva.cupos_reservados}</span>
                   </div>
                   <div className="info-item">
-                    <span className="info-label">📍 Destino:</span>
-                    <span>{reserva.ubicacion_destino?.nombre || 'Por definir'}</span>
+                    <span className="info-label">📍 Punto de recogida:</span>
+                    <span>{reserva.punto_recogida}</span>
                   </div>
-                  {reserva.fecha_solicitud && (
+                  {reserva.punto_destino && (
                     <div className="info-item">
-                      <span className="info-label">📝 Reservado:</span>
-                      <span>{formatearFecha(reserva.fecha_solicitud)}</span>
+                      <span className="info-label">📍 Punto de destino:</span>
+                      <span>{reserva.punto_destino}</span>
                     </div>
                   )}
+                  <div className="info-item">
+                    <span className="info-label">📝 Reservado el:</span>
+                    <span>{formatearFecha(reserva.fecha_reserva)}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">💰 Total a pagar:</span>
+                    <span style={{ fontWeight: 'bold', color: '#28a745' }}>
+                      ${(reserva.tarifa * reserva.cupos_reservados)?.toLocaleString('es-CO')}
+                    </span>
+                  </div>
                 </div>
                 <div className="viaje-actions">
-                  {puedeCancelar(reserva) && (
-                    <button 
-                      className="btn-danger"
-                      onClick={() => handleCancelarReserva(reserva.id_reserva)}
-                    >
-                      Cancelar Reserva
-                    </button>
-                  )}
+                  <div className="actions-row">
+                    {puedeCancelar(reserva) && (
+                      <button 
+                        className="btn-warning"
+                        onClick={() => handleCancelarReserva(reserva.id_reserva)}
+                        title="Marcar como cancelada"
+                      >
+                        🚫 Cancelar
+                      </button>
+                    )}
+                    {puedeEliminar(reserva) && (
+                      <button 
+                        className="btn-danger"
+                        onClick={() => handleEliminarReserva(reserva.id_reserva)}
+                        title="Eliminar completamente la reserva"
+                      >
+                        🗑️ Eliminar
+                      </button>
+                    )}
+                    {!puedeEliminar(reserva) && ['Pendiente', 'Aceptada'].includes(reserva.estado) && (
+                      <span className="tiempo-limite">
+                        ⏰ Solo se puede eliminar si faltan más de 1 hora
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             ))

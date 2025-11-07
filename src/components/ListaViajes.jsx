@@ -159,7 +159,7 @@ const ListaViajes = () => {
               🚗 Viajes Disponibles
             </Link>
             <Link to="/mis-reservas" className="nav-link">
-              📋 Mis Reservas
+              📋 Mis Reservas (Hoy)
             </Link>
             <Link to="/perfil" className="nav-link">
               👤 Mi Perfil

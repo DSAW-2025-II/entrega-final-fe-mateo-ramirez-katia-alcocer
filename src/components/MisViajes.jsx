@@ -134,7 +134,7 @@ const MisViajes = () => {
               🚗 Viajes Disponibles
             </Link>
             <Link to="/mis-reservas" className="nav-link">
-              📋 Mis Reservas
+              📋 Mis Reservas (Hoy)
             </Link>
             <Link to="/mis-vehiculos" className="nav-link">
               🚙 Mis Vehículos
@@ -196,7 +196,7 @@ const MisViajes = () => {
             🚗 Viajes Disponibles
           </Link>
           <Link to="/mis-reservas" className="nav-link">
-            📋 Mis Reservas
+            📋 Mis Reservas (Hoy)
           </Link>
           <Link to="/mis-vehiculos" className="nav-link">
             🚙 Mis Vehículos
@@ -297,7 +297,12 @@ const MisViajes = () => {
                       </button>
                     </>
                   )}
-                  {!['Activo', 'Lleno'].includes(viaje.estado) && (
+                  {viaje.estado === 'Expirado' && (
+                    <span className="viaje-estado-info expirado">
+                      ⏰ Este viaje expiró automáticamente
+                    </span>
+                  )}
+                  {!['Activo', 'Lleno', 'Expirado'].includes(viaje.estado) && (
                     <span className="viaje-estado-info">
                       Este viaje está {viaje.estado.toLowerCase()}
                     </span>

@@ -541,6 +541,16 @@ nav {
   color: #0c5460;
 }
 
+.estado.expirado {
+  background-color: #f0f0f0;
+  color: #6c757d;
+}
+
+.viaje-estado-info.expirado {
+  color: #6c757d;
+  font-style: italic;
+}
+
 /* Botones de acción */
 .btn-danger {
   background-color: #dc3545;
@@ -576,6 +586,36 @@ nav {
 
 .btn-success:hover {
   background-color: #218838;
+}
+
+.btn-warning {
+  background-color: #ffc107;
+  color: #212529;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background-color 0.3s ease;
+  font-weight: 500;
+}
+
+.btn-warning:hover {
+  background-color: #e0a800;
+}
+
+.actions-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.tiempo-limite {
+  font-size: 0.75rem;
+  color: #6c757d;
+  font-style: italic;
+  padding: 0.25rem 0.5rem;
 }
 
 /* Modal de Detalles del Viaje */

@@ -181,6 +181,31 @@ class ReservaService {
       };
     }
   }
+
+  async eliminarReserva(id_reserva) {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        return { success: false, error: 'No autenticado' };
+      }
+
+      const response = await axios.delete(
+        `${API_BASE_URL}/reservas/${id_reserva}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+      return { success: true, data: response.data.reserva };
+    } catch (error) {
+      console.error('Error al eliminar reserva:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || 'Error al eliminar reserva'
+      };
+    }
+  }
 }
 
 export default new ReservaService();
