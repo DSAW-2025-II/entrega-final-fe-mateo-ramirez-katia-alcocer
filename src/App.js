@@ -14,19 +14,28 @@ import Login from "./components/Login";
 import Registro from "./components/Registro";
 import RegistrarVehiculo from "./components/RegistrarVehiculo";
 import Perfil from "./components/Perfil";
+import NotificacionesToast from "./components/NotificacionesToast";
 
 function App() {
   const [mensaje, setMensaje] = useState("Cargando...");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     axios
       .get("https://bewheels.onrender.com/")
       .then((res) => setMensaje(res.data))
       .catch(() => setMensaje("No se pudo conectar con el servidor"));
+      
+    // Verificar si el usuario está logueado
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
   }, []);
 
   return (
     <Router>
+      {/* Mostrar notificaciones solo si el usuario está logueado */}
+      {isLoggedIn && <NotificacionesToast />}
+      
       <Routes>
         <Route
           path="/"

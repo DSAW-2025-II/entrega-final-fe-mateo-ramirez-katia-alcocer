@@ -28,6 +28,31 @@ class NotificacionService {
     }
   }
 
+  async listarNotificacionesNoLeidas() {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        return { success: false, error: 'No autenticado' };
+      }
+
+      const response = await axios.get(
+        `${API_BASE_URL}/notificaciones/no-leidas`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.error('Error al listar notificaciones no leídas:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || 'Error al cargar notificaciones no leídas'
+      };
+    }
+  }
+
   async contarNoLeidas() {
     try {
       const token = localStorage.getItem('token');
@@ -43,7 +68,7 @@ class NotificacionService {
           }
         }
       );
-      return { success: true, data: response.data.count };
+      return { success: true, data: response.data.total_no_leidas };
     } catch (error) {
       console.error('Error al contar notificaciones no leídas:', error);
       return {
