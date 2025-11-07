@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import authService from '../services/auth.service.js';
+import viajeService from '../services/viaje.service.js';
 import '../App.css';
 
 const MisViajes = () => {
@@ -25,11 +26,43 @@ const MisViajes = () => {
 
   const cargarViajes = async () => {
     setLoading(true);
-    // Simular carga de viajes
-    setTimeout(() => {
-      setViajes([]);
-      setLoading(false);
-    }, 1000);
+    setError('');
+    
+    const result = await viajeService.listarMisViajes();
+    if (result.success) {
+      setViajes(result.data);
+    } else {
+      setError(result.error);
+    }
+    setLoading(false);
+  };
+
+  const handleCancelarViaje = async (id_viaje) => {
+    if (!window.confirm('¿Estás seguro de que quieres cancelar este viaje?')) {
+      return;
+    }
+
+    const result = await viajeService.cancelarViaje(id_viaje);
+    if (result.success) {
+      alert('Viaje cancelado exitosamente');
+      cargarViajes(); // Recargar la lista
+    } else {
+      alert(`Error al cancelar viaje: ${result.error}`);
+    }
+  };
+
+  const handleCompletarViaje = async (id_viaje) => {
+    if (!window.confirm('¿Estás seguro de que quieres marcar este viaje como completado?')) {
+      return;
+    }
+
+    const result = await viajeService.completarViaje(id_viaje);
+    if (result.success) {
+      alert('Viaje completado exitosamente');
+      cargarViajes(); // Recargar la lista
+    } else {
+      alert(`Error al completar viaje: ${result.error}`);
+    }
   };
 
   const formatearFecha = (fecha) => {
@@ -188,22 +221,37 @@ const MisViajes = () => {
                   </div>
                   <div className="info-item">
                     <span className="info-label">💲 Tarifa:</span>
-                    <span>${viaje.tarifa.toLocaleString()}</span>
+                    <span>${viaje.tarifa?.toLocaleString()}</span>
                   </div>
+                  {viaje.marca && viaje.modelo && (
+                    <div className="info-item">
+                      <span className="info-label">🚗 Vehículo:</span>
+                      <span>{viaje.marca} {viaje.modelo} - {viaje.placa}</span>
+                    </div>
+                  )}
                 </div>
                 <div className="viaje-actions">
-                  <button 
-                    className="btn-secondary"
-                    onClick={() => alert('Ver detalles del viaje ' + viaje.id_viaje)}
-                  >
-                    Ver Detalles
-                  </button>
-                  <button 
-                    className="btn-danger"
-                    onClick={() => alert('Cancelar viaje ' + viaje.id_viaje)}
-                  >
-                    Cancelar Viaje
-                  </button>
+                  {viaje.estado === 'Activo' && (
+                    <>
+                      <button 
+                        className="btn-success"
+                        onClick={() => handleCompletarViaje(viaje.id_viaje)}
+                      >
+                        ✅ Completar Viaje
+                      </button>
+                      <button 
+                        className="btn-danger"
+                        onClick={() => handleCancelarViaje(viaje.id_viaje)}
+                      >
+                        ❌ Cancelar Viaje
+                      </button>
+                    </>
+                  )}
+                  {viaje.estado !== 'Activo' && (
+                    <span className="viaje-estado-info">
+                      Este viaje está {viaje.estado.toLowerCase()}
+                    </span>
+                  )}
                 </div>
               </div>
             ))

@@ -557,6 +557,21 @@ nav {
   background-color: #c82333;
 }
 
+.btn-success {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background-color 0.3s ease;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+}
+
 .no-results {
   text-align: center;
   padding: 3rem;

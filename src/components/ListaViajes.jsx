@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import authService from '../services/auth.service.js';
 import viajeService from '../services/viaje.service.js';
+import ReservarViaje from './ReservarViaje.jsx';
 import '../App.css';
 
 const ListaViajes = () => {
@@ -14,6 +15,8 @@ const ListaViajes = () => {
     fecha: ''
   });
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [viajeSeleccionado, setViajeSeleccionado] = useState(null);
+  const [mostrarReserva, setMostrarReserva] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,35 +34,14 @@ const ListaViajes = () => {
 
   const cargarViajes = async () => {
     setLoading(true);
-    // Simulamos datos de viajes por ahora
-    const viajesSimulados = [
-      {
-        id_viaje: 1,
-        origen: 'Bogotá',
-        destino: 'Chía',
-        fecha_salida: '2024-01-15T08:00:00',
-        tarifa: 15000,
-        nombre_conductor: 'Juan Pérez',
-        marca: 'Toyota',
-        modelo: '2020',
-        cupos_disponibles: 3,
-        cupos_totales: 4
-      },
-      {
-        id_viaje: 2,
-        origen: 'Chía',
-        destino: 'Bogotá',
-        fecha_salida: '2024-01-15T17:00:00',
-        tarifa: 12000,
-        nombre_conductor: 'María García',
-        marca: 'Honda',
-        modelo: '2019',
-        cupos_disponibles: 2,
-        cupos_totales: 4
-      }
-    ];
+    setError('');
     
-    setViajes(viajesSimulados);
+    const result = await viajeService.listarViajesDisponibles(filtros);
+    if (result.success) {
+      setViajes(result.data);
+    } else {
+      setError(result.error);
+    }
     setLoading(false);
   };
 
@@ -81,6 +63,51 @@ const ListaViajes = () => {
       fecha: ''
     });
     cargarViajes();
+  };
+
+  const handleReservarViaje = (viaje) => {
+    const usuario = authService.getUser();
+    
+    // Verificar que no sea el propio conductor
+    if (viaje.id_conductor === usuario?.id_usuario) {
+      alert('No puedes reservar en tu propio viaje');
+      return;
+    }
+
+    // Verificar que el viaje esté disponible
+    if (viaje.estado !== 'Activo' || viaje.cupos_disponibles === 0) {
+      alert('Este viaje no está disponible para reservas');
+      return;
+    }
+
+    setViajeSeleccionado(viaje);
+    setMostrarReserva(true);
+  };
+
+  const handleCerrarReserva = () => {
+    setMostrarReserva(false);
+    setViajeSeleccionado(null);
+  };
+
+  const handleReservaCreada = () => {
+    // Recargar los viajes para actualizar cupos
+    cargarViajes();
+    alert('¡Reserva enviada con éxito! El conductor recibirá tu solicitud.');
+  };
+
+  const puedeReservar = (viaje) => {
+    const usuario = authService.getUser();
+    return viaje.estado === 'Activo' && 
+           viaje.cupos_disponibles > 0 && 
+           viaje.id_conductor !== usuario?.id_usuario;
+  };
+
+  const getEstadoViaje = (viaje) => {
+    if (viaje.estado === 'Lleno') return '🔴 Lleno';
+    if (viaje.estado === 'Cancelado') return '❌ Cancelado';
+    if (viaje.estado === 'Completado') return '✅ Completado';
+    if (viaje.cupos_disponibles === 0) return '🔴 Sin cupos';
+    return '🟢 Disponible';
   };
 
   const formatearFecha = (fecha) => {
@@ -241,21 +268,58 @@ const ListaViajes = () => {
                     <span className="info-label">🪑 Cupos:</span>
                     <span>{viaje.cupos_disponibles} de {viaje.cupos_totales} disponibles</span>
                   </div>
+
+                  <div className="info-item">
+                    <span className="info-label">📊 Estado:</span>
+                    <span className="estado-viaje">{getEstadoViaje(viaje)}</span>
+                  </div>
                 </div>
                 
                 <div className="viaje-actions">
                   <button 
-                    className="btn-primary"
+                    className="btn-secondary"
                     onClick={() => navigate(`/viajes/${viaje.id_viaje}`)}
                   >
                     Ver Detalles
                   </button>
+                  
+                  {puedeReservar(viaje) ? (
+                    <button 
+                      className="btn-primary"
+                      onClick={() => handleReservarViaje(viaje)}
+                    >
+                      🚗 Reservar Cupo
+                    </button>
+                  ) : (
+                    <button 
+                      className="btn-disabled"
+                      disabled
+                      title={
+                        viaje.id_conductor === authService.getUser()?.id_usuario 
+                          ? "Es tu propio viaje" 
+                          : "No disponible para reservas"
+                      }
+                    >
+                      {viaje.id_conductor === authService.getUser()?.id_usuario 
+                        ? "Tu viaje" 
+                        : "No disponible"}
+                    </button>
+                  )}
                 </div>
               </div>
             ))
           )}
         </div>
       </div>
+
+      {/* Modal de reserva */}
+      {mostrarReserva && viajeSeleccionado && (
+        <ReservarViaje
+          viaje={viajeSeleccionado}
+          onClose={handleCerrarReserva}
+          onReservaCreada={handleReservaCreada}
+        />
+      )}
     </div>
   );
 };

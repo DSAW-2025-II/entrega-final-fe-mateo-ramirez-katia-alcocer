@@ -28,6 +28,13 @@ const CrearViaje = () => {
         return;
       }
 
+      // Verificar si ya tiene un viaje activo
+      const viajeActivoResult = await viajeService.verificarViajeActivo();
+      if (viajeActivoResult.success && viajeActivoResult.data.tieneViajeActivo) {
+        setError('Ya tienes un viaje activo. Debes completar o cancelar tu viaje actual antes de crear uno nuevo.');
+        return;
+      }
+
       // Cargar vehículos del usuario
       const result = await vehiculoService.listarVehiculosUsuario();
       if (result.success) {

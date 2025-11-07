@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import authService from '../services/auth.service.js';
 import reservaService from '../services/reserva.service.js';
 import '../App.css';
 
-const MisReservas = () => {
+const GestionarSolicitudes = () => {
   const [reservas, setReservas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -12,23 +12,18 @@ const MisReservas = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const verificarAutenticacion = async () => {
-      if (!authService.isAuthenticated()) {
-        navigate('/login');
-        return;
-      }
-
-      await cargarReservas();
-    };
-
-    verificarAutenticacion();
+    if (!authService.isAuthenticated()) {
+      navigate('/login');
+      return;
+    }
+    cargarSolicitudes();
   }, [navigate]);
 
-  const cargarReservas = async () => {
+  const cargarSolicitudes = async () => {
     setLoading(true);
     setError('');
     
-    const result = await reservaService.listarMisReservas();
+    const result = await reservaService.listarSolicitudesConductor();
     if (result.success) {
       setReservas(result.data);
     } else {
@@ -37,17 +32,27 @@ const MisReservas = () => {
     setLoading(false);
   };
 
-  const handleCancelarReserva = async (id_reserva) => {
-    if (!window.confirm('¿Estás seguro de que quieres cancelar esta reserva?')) {
+  const handleAceptarReserva = async (id_reserva) => {
+    const result = await reservaService.aceptarReserva(id_reserva);
+    if (result.success) {
+      alert('Reserva aceptada exitosamente');
+      cargarSolicitudes(); // Recargar la lista
+    } else {
+      alert(`Error al aceptar reserva: ${result.error}`);
+    }
+  };
+
+  const handleRechazarReserva = async (id_reserva) => {
+    if (!window.confirm('¿Estás seguro de que quieres rechazar esta reserva?')) {
       return;
     }
 
-    const result = await reservaService.cancelarReserva(id_reserva);
+    const result = await reservaService.rechazarReserva(id_reserva);
     if (result.success) {
-      alert('Reserva cancelada exitosamente');
-      cargarReservas(); // Recargar la lista
+      alert('Reserva rechazada');
+      cargarSolicitudes(); // Recargar la lista
     } else {
-      alert(`Error al cancelar reserva: ${result.error}`);
+      alert(`Error al rechazar reserva: ${result.error}`);
     }
   };
 
@@ -81,11 +86,6 @@ const MisReservas = () => {
     }
   };
 
-  const puedeCancelar = (reserva) => {
-    return ['Pendiente', 'Aceptada'].includes(reserva.estado) && 
-           new Date(reserva.fecha_salida) > new Date();
-  };
-
   if (loading) {
     return (
       <div className="layout">
@@ -93,30 +93,6 @@ const MisReservas = () => {
           <div className="logo">
             <h2>Wheels</h2>
           </div>
-          
-          <nav>
-            <Link to="/menu" className="nav-link">
-              🏠 Inicio
-            </Link>
-            <Link to="/viajes/crear" className="nav-link">
-              ➕ Crear Viaje
-            </Link>
-            <Link to="/mis-viajes" className="nav-link">
-              🗺️ Mis Viajes
-            </Link>
-            <Link to="/viajes" className="nav-link">
-              🚗 Viajes Disponibles
-            </Link>
-            <Link to="/mis-reservas" className="nav-link active">
-              📋 Mis Reservas
-            </Link>
-            <Link to="/mis-vehiculos" className="nav-link">
-              🚙 Mis Vehículos
-            </Link>
-            <Link to="/perfil" className="nav-link">
-              👤 Mi Perfil
-            </Link>
-          </nav>
           
           <div className="user-info">
             <div className="user-avatar">
@@ -136,7 +112,7 @@ const MisReservas = () => {
         </aside>
         <div className="main-content">
           <div className="loading-container">
-            <p>Cargando reservas...</p>
+            <p>Cargando solicitudes...</p>
           </div>
         </div>
       </div>
@@ -169,8 +145,11 @@ const MisReservas = () => {
           <Link to="/viajes" className="nav-link">
             🚗 Viajes Disponibles
           </Link>
-          <Link to="/mis-reservas" className="nav-link active">
+          <Link to="/mis-reservas" className="nav-link">
             📋 Mis Reservas
+          </Link>
+          <Link to="/gestionar-solicitudes" className="nav-link active">
+            📥 Gestionar Solicitudes
           </Link>
           <Link to="/mis-vehiculos" className="nav-link">
             🚙 Mis Vehículos
@@ -199,8 +178,8 @@ const MisReservas = () => {
 
       <main className="main-content">
         <div className="welcome-section">
-          <h1>Mis Reservas</h1>
-          <p>Aquí puedes ver y gestionar tus reservas como pasajero.</p>
+          <h1>Gestionar Solicitudes</h1>
+          <p>Aquí puedes revisar y gestionar las solicitudes de reserva para tus viajes.</p>
         </div>
 
         {error && <div className="error-message">{error}</div>}
@@ -208,10 +187,10 @@ const MisReservas = () => {
         <div className="viajes-grid">
           {reservas.length === 0 ? (
             <div className="no-results">
-              <h3>No tienes reservas activas</h3>
-              <p>¡Explora los viajes disponibles y haz tu primera reserva!</p>
-              <Link to="/viajes" className="btn-primary" style={{marginTop: '1rem'}}>
-                Ver Viajes Disponibles
+              <h3>No tienes solicitudes pendientes</h3>
+              <p>Cuando alguien solicite un cupo en tus viajes, aparecerán aquí.</p>
+              <Link to="/viajes/crear" className="btn-primary" style={{marginTop: '1rem'}}>
+                Crear Nuevo Viaje
               </Link>
             </div>
           ) : (
@@ -228,12 +207,16 @@ const MisReservas = () => {
                 </div>
                 <div className="viaje-info">
                   <div className="info-item">
-                    <span className="info-label">📅 Fecha:</span>
+                    <span className="info-label">👤 Pasajero:</span>
+                    <span>{reserva.usuario?.nombre || 'Usuario'}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">📅 Fecha del viaje:</span>
                     <span>{formatearFecha(reserva.viaje?.fecha_salida)}</span>
                   </div>
                   <div className="info-item">
-                    <span className="info-label">👤 Conductor:</span>
-                    <span>{reserva.viaje?.conductor?.nombre || 'Conductor'}</span>
+                    <span className="info-label">📝 Solicitado:</span>
+                    <span>{formatearFecha(reserva.fecha_solicitud)}</span>
                   </div>
                   <div className="info-item">
                     <span className="info-label">💲 Tarifa:</span>
@@ -247,23 +230,30 @@ const MisReservas = () => {
                     <span className="info-label">📍 Destino:</span>
                     <span>{reserva.ubicacion_destino?.nombre || 'Por definir'}</span>
                   </div>
-                  {reserva.fecha_solicitud && (
+                  {reserva.usuario?.telefono && (
                     <div className="info-item">
-                      <span className="info-label">📝 Reservado:</span>
-                      <span>{formatearFecha(reserva.fecha_solicitud)}</span>
+                      <span className="info-label">📞 Teléfono:</span>
+                      <span>{reserva.usuario.telefono}</span>
                     </div>
                   )}
                 </div>
-                <div className="viaje-actions">
-                  {puedeCancelar(reserva) && (
+                
+                {reserva.estado === 'Pendiente' && (
+                  <div className="viaje-actions">
+                    <button 
+                      className="btn-success"
+                      onClick={() => handleAceptarReserva(reserva.id_reserva)}
+                    >
+                      ✅ Aceptar
+                    </button>
                     <button 
                       className="btn-danger"
-                      onClick={() => handleCancelarReserva(reserva.id_reserva)}
+                      onClick={() => handleRechazarReserva(reserva.id_reserva)}
                     >
-                      Cancelar Reserva
+                      ❌ Rechazar
                     </button>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             ))
           )}
@@ -273,4 +263,4 @@ const MisReservas = () => {
   );
 };
 
-export default MisReservas;
+export default GestionarSolicitudes;

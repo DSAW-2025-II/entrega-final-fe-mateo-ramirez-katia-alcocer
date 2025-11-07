@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL ;
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 class ViajeService {
   async crearViaje(datosViaje) {
@@ -32,7 +32,7 @@ class ViajeService {
       if (filtros.destino) params.append('destino', filtros.destino);
       if (filtros.fecha) params.append('fecha', filtros.fecha);
 
-      const response = await axios.get(`${API_BASE_URL}/viajes/disponibles?${params}`, {
+      const response = await axios.get(`${API_BASE_URL}/viajes?${params}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -121,6 +121,44 @@ class ViajeService {
       return { 
         success: false, 
         error: error.response?.data?.error || 'Error al cancelar viaje' 
+      };
+    }
+  }
+
+  async verificarViajeActivo() {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API_BASE_URL}/viajes/verificar-activo`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.error('Error verificando viaje activo:', error);
+      return { 
+        success: false, 
+        error: error.response?.data?.error || 'Error al verificar viaje activo' 
+      };
+    }
+  }
+
+  async completarViaje(id) {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.put(`${API_BASE_URL}/viajes/${id}/completar`, {}, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.error('Error completando viaje:', error);
+      return { 
+        success: false, 
+        error: error.response?.data?.error || 'Error al completar viaje' 
       };
     }
   }

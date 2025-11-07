@@ -78,6 +78,9 @@ const MenuConductor = () => {
             <Link to="/mis-reservas" className="nav-link">
               📋 Mis Reservas
             </Link>
+            <Link to="/gestionar-solicitudes" className="nav-link">
+              📥 Gestionar Solicitudes
+            </Link>
             <Link to="/mis-vehiculos" className="nav-link">
               🚙 Mis Vehículos
             </Link>
@@ -126,7 +129,13 @@ const MenuConductor = () => {
               </div>
               
               <div className="action-card">
-                <h3>🚗 Buscar Viajes</h3>
+                <h3>� Gestionar Solicitudes</h3>
+                <p>Revisa y gestiona las solicitudes de reserva</p>
+                <Link to="/gestionar-solicitudes" className="btn-primary">Ver Solicitudes</Link>
+              </div>
+              
+              <div className="action-card">
+                <h3>�🚗 Buscar Viajes</h3>
                 <p>Encuentra viajes disponibles como pasajero</p>
                 <Link to="/viajes" className="btn-primary">Ver Viajes</Link>
               </div>

@@ -9,6 +9,7 @@ import CrearViaje from "./components/CrearViaje";
 import MisViajes from "./components/MisViajes";
 import MisReservas from "./components/MisReservas";
 import MisVehiculos from "./components/MisVehiculos";
+import GestionarSolicitudes from "./components/GestionarSolicitudes";
 import Login from "./components/Login";
 import Registro from "./components/Registro";
 import RegistrarVehiculo from "./components/RegistrarVehiculo";
@@ -53,6 +54,7 @@ function App() {
             <Route path="/viajes/crear" element={<CrearViaje />} />
             <Route path="/mis-viajes" element={<MisViajes />} />
             <Route path="/mis-reservas" element={<MisReservas />} />
+            <Route path="/gestionar-solicitudes" element={<GestionarSolicitudes />} />
             <Route path="/mis-vehiculos" element={<MisVehiculos />} />
             <Route path="/registrar-vehiculo" element={<RegistrarVehiculo />} />
             <Route path="/perfil" element={<Perfil />} />
