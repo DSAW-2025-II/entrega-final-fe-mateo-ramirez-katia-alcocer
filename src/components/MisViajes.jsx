@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import authService from '../services/auth.service.js';
 import viajeService from '../services/viaje.service.js';
+import DetallesViaje from './DetallesViaje.jsx';
 import '../App.css';
 
 const MisViajes = () => {
@@ -9,6 +10,8 @@ const MisViajes = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [viajeSeleccionado, setViajeSeleccionado] = useState(null);
+  const [mostrarDetalles, setMostrarDetalles] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -63,6 +66,16 @@ const MisViajes = () => {
     } else {
       alert(`Error al completar viaje: ${result.error}`);
     }
+  };
+
+  const handleVerDetalles = (viaje) => {
+    setViajeSeleccionado(viaje);
+    setMostrarDetalles(true);
+  };
+
+  const handleCerrarDetalles = () => {
+    setMostrarDetalles(false);
+    setViajeSeleccionado(null);
   };
 
   const formatearFecha = (fecha) => {
@@ -231,6 +244,12 @@ const MisViajes = () => {
                   )}
                 </div>
                 <div className="viaje-actions">
+                  <button 
+                    className="btn-secondary"
+                    onClick={() => handleVerDetalles(viaje)}
+                  >
+                    👁️ Ver Detalles
+                  </button>
                   {viaje.estado === 'Activo' && (
                     <>
                       <button 
@@ -258,6 +277,14 @@ const MisViajes = () => {
           )}
         </div>
       </main>
+
+      {/* Modal de detalles */}
+      {mostrarDetalles && viajeSeleccionado && (
+        <DetallesViaje
+          viaje={viajeSeleccionado}
+          onCerrar={handleCerrarDetalles}
+        />
+      )}
     </div>
   );
 };

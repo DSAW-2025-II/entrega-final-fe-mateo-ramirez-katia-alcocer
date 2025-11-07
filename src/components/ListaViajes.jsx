@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import authService from '../services/auth.service.js';
 import viajeService from '../services/viaje.service.js';
 import ReservarViaje from './ReservarViaje.jsx';
+import DetallesViaje from './DetallesViaje.jsx';
 import '../App.css';
 
 const ListaViajes = () => {
@@ -17,6 +18,7 @@ const ListaViajes = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [viajeSeleccionado, setViajeSeleccionado] = useState(null);
   const [mostrarReserva, setMostrarReserva] = useState(false);
+  const [mostrarDetalles, setMostrarDetalles] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -84,8 +86,14 @@ const ListaViajes = () => {
     setMostrarReserva(true);
   };
 
-  const handleCerrarReserva = () => {
+  const handleVerDetalles = (viaje) => {
+    setViajeSeleccionado(viaje);
+    setMostrarDetalles(true);
+  };
+
+  const handleCerrarModales = () => {
     setMostrarReserva(false);
+    setMostrarDetalles(false);
     setViajeSeleccionado(null);
   };
 
@@ -278,9 +286,9 @@ const ListaViajes = () => {
                 <div className="viaje-actions">
                   <button 
                     className="btn-secondary"
-                    onClick={() => navigate(`/viajes/${viaje.id_viaje}`)}
+                    onClick={() => handleVerDetalles(viaje)}
                   >
-                    Ver Detalles
+                    👁️ Ver Detalles
                   </button>
                   
                   {puedeReservar(viaje) ? (
@@ -316,8 +324,17 @@ const ListaViajes = () => {
       {mostrarReserva && viajeSeleccionado && (
         <ReservarViaje
           viaje={viajeSeleccionado}
-          onClose={handleCerrarReserva}
+          onClose={handleCerrarModales}
           onReservaCreada={handleReservaCreada}
+        />
+      )}
+
+      {/* Modal de detalles */}
+      {mostrarDetalles && viajeSeleccionado && (
+        <DetallesViaje
+          viaje={viajeSeleccionado}
+          onCerrar={handleCerrarModales}
+          onReservar={handleReservarViaje}
         />
       )}
     </div>
