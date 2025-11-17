@@ -22,8 +22,8 @@ function App() {
 
   useEffect(() => {
     axios
-      .get("https://bewheels.onrender.com/")
-      .then((res) => setMensaje(res.data))
+      .get("https://bewheels-xmjl.onrender.com/")
+      .then((res) => setMensaje("API Wheels funcionando"))
       .catch(() => setMensaje("No se pudo conectar con el servidor"));
       
     // Verificar si el usuario está logueado
@@ -40,16 +40,20 @@ function App() {
         <Route
           path="/"
           element={
-            <div style={{ textAlign: "center", marginTop: "50px" }}>
-              <h1>Wheels - Carpooling Universitario</h1>
-              <p>{mensaje}</p>
-              <div style={{ marginTop: "20px" }}>
-                <a href="/login" style={{ marginRight: "20px", padding: "10px 20px", backgroundColor: "#007bff", color: "white", textDecoration: "none", borderRadius: "5px" }}>
-                  Iniciar Sesión
-                </a>
-                <a href="/registro" style={{ padding: "10px 20px", backgroundColor: "#28a745", color: "white", textDecoration: "none", borderRadius: "5px" }}>
-                  Registrarse
-                </a>
+            <div className="auth-container">
+              <div className="auth-card welcome-card">
+                <div className="welcome-logo">🚗</div>
+                <h1>Wheels</h1>
+                <p className="welcome-subtitle">Carpooling Universitario</p>
+                <p className="welcome-status">{mensaje}</p>
+                <div className="welcome-buttons">
+                  <a href="/login" className="btn-primary welcome-btn">
+                    Iniciar Sesión
+                  </a>
+                  <a href="/registro" className="btn-secondary welcome-btn">
+                    Registrarse
+                  </a>
+                </div>
               </div>
             </div>
           }
