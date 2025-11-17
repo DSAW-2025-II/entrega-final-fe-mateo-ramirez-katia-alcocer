@@ -3,10 +3,18 @@
  */
 
 const getServerBaseUrl = () => {
+  // Verificar si tenemos la variable de entorno configurada
   if (process.env.REACT_APP_API_URL) {
     return process.env.REACT_APP_API_URL.replace('/api', '');
   }
-  return 'http://localhost:5000';
+  
+  // Determinar automáticamente según el entorno
+  if (process.env.NODE_ENV === 'development') {
+    return 'http://localhost:5000';
+  } else {
+    // En producción, usar la URL de producción por defecto
+    return 'https://bewheels-xmjl.onrender.com';
+  }
 };
 
 /**

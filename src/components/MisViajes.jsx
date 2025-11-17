@@ -3,13 +3,13 @@ import { useNavigate, Link } from 'react-router-dom';
 import authService from '../services/auth.service.js';
 import viajeService from '../services/viaje.service.js';
 import DetallesViaje from './DetallesViaje.jsx';
+import UserInfo from './UserInfo.jsx';
 import '../App.css';
 
 const MisViajes = () => {
   const [viajes, setViajes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [viajeSeleccionado, setViajeSeleccionado] = useState(null);
   const [mostrarDetalles, setMostrarDetalles] = useState(false);
   const navigate = useNavigate();
@@ -134,7 +134,7 @@ const MisViajes = () => {
               🚗 Viajes Disponibles
             </Link>
             <Link to="/mis-reservas" className="nav-link">
-              📋 Mis Reservas (Hoy)
+              📋 Mis Reservas
             </Link>
             <Link to="/mis-vehiculos" className="nav-link">
               🚙 Mis Vehículos
@@ -144,21 +144,7 @@ const MisViajes = () => {
             </Link>
           </nav>
           
-          <div className="user-info">
-            <div className="user-avatar">
-              <div className="avatar-placeholder">👤</div>
-            </div>
-            <p className="user-name">{authService.getUser()?.nombre}</p>
-            <button 
-              className="logout-btn"
-              onClick={() => {
-                authService.logout();
-                navigate('/login');
-              }}
-            >
-              Cerrar sesión
-            </button>
-          </div>
+          <UserInfo onLogout={() => navigate('/login')} />
         </aside>
         <div className="main-content">
           <div className="loading-container">
@@ -171,13 +157,7 @@ const MisViajes = () => {
 
   return (
     <div className="layout">
-      <button 
-        className="mobile-menu-btn"
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-      >
-        ☰
-      </button>
-      <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+      <aside className="sidebar">
         <div className="logo">
           <h2>Wheels</h2>
         </div>
@@ -206,32 +186,13 @@ const MisViajes = () => {
           </Link>
         </nav>
         
-        <div className="user-info">
-          <div className="user-avatar">
-            <div className="avatar-placeholder">👤</div>
-          </div>
-          <p className="user-name">{authService.getUser()?.nombre}</p>
-          <button 
-            className="logout-btn"
-            onClick={() => {
-              authService.logout();
-              navigate('/login');
-            }}
-          >
-            Cerrar sesión
-          </button>
-        </div>
+        <UserInfo onLogout={() => navigate('/login')} />
       </aside>
 
       <main className="main-content">
         <div className="welcome-section">
-          <h1>Mis Viajes - Hoy</h1>
-          <p>Aquí puedes ver y gestionar tus viajes del día de hoy ({new Date().toLocaleDateString('es-CO', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-          })})</p>
+          <h1>Mis Viajes</h1>
+          <p>Aquí puedes ver y gestionar todos tus viajes como conductor.</p>
         </div>
 
         {error && <div className="error-message">{error}</div>}

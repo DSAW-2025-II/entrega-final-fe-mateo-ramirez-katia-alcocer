@@ -4,6 +4,7 @@ import authService from '../services/auth.service.js';
 import viajeService from '../services/viaje.service.js';
 import vehiculoService from '../services/vehiculo.service.js';
 import UbicacionSelector from './UbicacionSelector.jsx';
+import UserInfo from './UserInfo.jsx';
 import '../App.css';
 
 const CrearViaje = () => {
@@ -18,7 +19,6 @@ const CrearViaje = () => {
   const [vehiculos, setVehiculos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -168,13 +168,7 @@ const CrearViaje = () => {
 
       return (
         <div className="layout">
-          <button 
-            className="mobile-menu-btn"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-          >
-            ☰
-          </button>
-          <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+          <aside className="sidebar">
             <div className="logo">
               <h2>Wheels</h2>
             </div>
@@ -200,21 +194,7 @@ const CrearViaje = () => {
             </Link>
           </nav>
           
-          <div className="user-info">
-            <div className="user-avatar">
-              <div className="avatar-placeholder">👤</div>
-            </div>
-            <p className="user-name">{authService.getUser()?.nombre}</p>
-            <button 
-              className="logout-btn"
-              onClick={() => {
-                authService.logout();
-                navigate('/login');
-              }}
-            >
-              Cerrar sesión
-            </button>
-          </div>
+          <UserInfo onLogout={() => navigate('/login')} />
         </aside>
 
       <div className="main-content">

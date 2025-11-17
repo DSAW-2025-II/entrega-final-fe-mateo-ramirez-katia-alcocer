@@ -12,7 +12,6 @@ const Perfil = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [fotoFile, setFotoFile] = useState(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [newPassword, setNewPassword] = useState('');
@@ -130,20 +129,7 @@ const Perfil = () => {
 
   return (
     <div className="layout">
-      <button 
-        className={`mobile-menu-btn ${sidebarOpen ? 'open' : ''}`}
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-      >
-        <span className="menu-text">Wheels</span>
-        <span className="menu-icon">{sidebarOpen ? '✕' : '☰'}</span>
-      </button>
-      {sidebarOpen && (
-        <div 
-          className="sidebar-overlay active"
-          onClick={() => setSidebarOpen(false)}
-        ></div>
-      )}
-      <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+      <aside className="sidebar">
         <div className="sidebar-header">
           <div className="logo">
             <h2>Wheels</h2>

@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import authService from '../services/auth.service.js';
 import reservaService from '../services/reserva.service.js';
+import UserInfo from './UserInfo.jsx';
 import '../App.css';
 
 const GestionarSolicitudes = () => {
   const [reservas, setReservas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -94,21 +94,7 @@ const GestionarSolicitudes = () => {
             <h2>Wheels</h2>
           </div>
           
-          <div className="user-info">
-            <div className="user-avatar">
-              <div className="avatar-placeholder">👤</div>
-            </div>
-            <p className="user-name">{authService.getUser()?.nombre}</p>
-            <button 
-              className="logout-btn"
-              onClick={() => {
-                authService.logout();
-                navigate('/login');
-              }}
-            >
-              Cerrar sesión
-            </button>
-          </div>
+          <UserInfo onLogout={() => navigate('/login')} />
         </aside>
         <div className="main-content">
           <div className="loading-container">
@@ -121,13 +107,7 @@ const GestionarSolicitudes = () => {
 
   return (
     <div className="layout">
-      <button 
-        className="mobile-menu-btn"
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-      >
-        ☰
-      </button>
-      <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+      <aside className="sidebar">
         <div className="logo">
           <h2>Wheels</h2>
         </div>
@@ -157,26 +137,10 @@ const GestionarSolicitudes = () => {
           <Link to="/perfil" className="nav-link">
             👤 Mi Perfil
           </Link>
-        </nav>
-        
-        <div className="user-info">
-          <div className="user-avatar">
-            <div className="avatar-placeholder">👤</div>
-          </div>
-          <p className="user-name">{authService.getUser()?.nombre}</p>
-          <button 
-            className="logout-btn"
-            onClick={() => {
-              authService.logout();
-              navigate('/login');
-            }}
-          >
-            Cerrar sesión
-          </button>
-        </div>
-      </aside>
-
-      <main className="main-content">
+          </nav>
+          
+          <UserInfo onLogout={() => navigate('/login')} />
+        </aside>      <main className="main-content">
         <div className="welcome-section">
           <h1>Gestionar Solicitudes</h1>
           <p>Aquí puedes revisar y gestionar las solicitudes de reserva para tus viajes.</p>

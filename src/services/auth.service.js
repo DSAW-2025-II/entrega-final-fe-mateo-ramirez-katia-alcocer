@@ -167,6 +167,11 @@ class AuthService {
       if (perfilActualizado) {
         localStorage.setItem('user', JSON.stringify(perfilActualizado));
         this.user = perfilActualizado;
+        
+        // Disparar evento personalizado para notificar actualización del perfil
+        window.dispatchEvent(new CustomEvent('profileUpdated', { 
+          detail: perfilActualizado 
+        }));
       }
       return { success: true, data: perfilActualizado };
     } catch (error) {

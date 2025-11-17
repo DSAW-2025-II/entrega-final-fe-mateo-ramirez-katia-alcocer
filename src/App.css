@@ -452,6 +452,69 @@ nav {
   justify-content: center;
 }
 
+/* Grupo de input de fecha con botón */
+.fecha-input-group {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.btn-fecha-hoy {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-fecha-hoy:hover {
+  background: #0056b3;
+}
+
+/* Filtros avanzados */
+.filtros-toggle {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.filtros-avanzados {
+  border-top: 1px solid #e9ecef;
+  padding-top: 1.5rem;
+  margin-top: 1rem;
+}
+
+.btn-outline {
+  background: white;
+  color: #667eea;
+  border: 2px solid #667eea;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.btn-outline:hover {
+  background: #667eea;
+  color: white;
+}
+
+.resultados-info {
+  grid-column: 1 / -1;
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  text-align: center;
+  color: #666;
+  font-size: 0.9rem;
+}
+
 /* Grid de viajes */
 .viajes-grid {
   display: grid;

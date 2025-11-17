@@ -4,18 +4,24 @@ import authService from '../services/auth.service.js';
 import viajeService from '../services/viaje.service.js';
 import ReservarViaje from './ReservarViaje.jsx';
 import DetallesViaje from './DetallesViaje.jsx';
+import UserInfo from './UserInfo.jsx';
+import UbicacionSelector from './UbicacionSelector.jsx';
 import '../App.css';
 
 const ListaViajes = () => {
   const [viajes, setViajes] = useState([]);
+  const [viajesFiltrados, setViajesFiltrados] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [filtros, setFiltros] = useState({
     origen: '',
     destino: '',
-    fecha: ''
+    fecha: '',
+    tarifaMin: '',
+    tarifaMax: '',
+    cuposMin: 1
   });
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mostrarFiltrosAvanzados, setMostrarFiltrosAvanzados] = useState(false);
   const [viajeSeleccionado, setViajeSeleccionado] = useState(null);
   const [mostrarReserva, setMostrarReserva] = useState(false);
   const [mostrarDetalles, setMostrarDetalles] = useState(false);
@@ -28,43 +34,115 @@ const ListaViajes = () => {
         return;
       }
 
-      await cargarViajes();
+      await cargarViajesSinFiltros();
     };
 
     verificarAutenticacion();
   }, [navigate]);
 
-  const cargarViajes = async () => {
+  // Efecto para aplicar filtros automáticamente cuando cambian
+  useEffect(() => {
+    if (viajes.length > 0) {
+      aplicarTodosLosFiltros();
+    }
+  }, [filtros, viajes]);
+
+  const aplicarTodosLosFiltros = () => {
+    let resultados = [...viajes];
+
+    // Filtro por origen (búsqueda flexible)
+    if (filtros.origen.trim()) {
+      const origenLower = filtros.origen.toLowerCase();
+      resultados = resultados.filter(viaje => 
+        viaje.origen?.toLowerCase().includes(origenLower)
+      );
+    }
+
+    // Filtro por destino (búsqueda flexible)
+    if (filtros.destino.trim()) {
+      const destinoLower = filtros.destino.toLowerCase();
+      resultados = resultados.filter(viaje => 
+        viaje.destino?.toLowerCase().includes(destinoLower)
+      );
+    }
+
+    // Filtro por fecha
+    if (filtros.fecha) {
+      const fechaFiltro = new Date(filtros.fecha);
+      resultados = resultados.filter(viaje => {
+        const fechaViaje = new Date(viaje.fecha_salida);
+        return fechaViaje.toDateString() === fechaFiltro.toDateString();
+      });
+    } else {
+      // Si no hay filtro de fecha, mostrar solo viajes de hoy en adelante
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+      resultados = resultados.filter(viaje => {
+        const fechaViaje = new Date(viaje.fecha_salida);
+        return fechaViaje >= hoy;
+      });
+    }
+
+    // Filtro por tarifa mínima
+    if (filtros.tarifaMin && !isNaN(filtros.tarifaMin)) {
+      const tarifaMin = parseFloat(filtros.tarifaMin);
+      resultados = resultados.filter(viaje => viaje.tarifa >= tarifaMin);
+    }
+
+    // Filtro por tarifa máxima
+    if (filtros.tarifaMax && !isNaN(filtros.tarifaMax)) {
+      const tarifaMax = parseFloat(filtros.tarifaMax);
+      resultados = resultados.filter(viaje => viaje.tarifa <= tarifaMax);
+    }
+
+    // Filtro por cupos mínimos
+    if (filtros.cuposMin && !isNaN(filtros.cuposMin)) {
+      const cuposMin = parseInt(filtros.cuposMin);
+      resultados = resultados.filter(viaje => viaje.cupos_disponibles >= cuposMin);
+    }
+
+    // Ordenar por fecha de salida
+    resultados.sort((a, b) => new Date(a.fecha_salida) - new Date(b.fecha_salida));
+
+    setViajesFiltrados(resultados);
+  };
+
+  const handleFiltroChange = (e) => {
+    const nuevosFiltros = {
+      ...filtros,
+      [e.target.name]: e.target.value
+    };
+    setFiltros(nuevosFiltros);
+    // Los filtros se aplicarán automáticamente por el useEffect
+  };
+
+  const cargarViajesSinFiltros = async () => {
     setLoading(true);
     setError('');
     
-    const result = await viajeService.listarViajesDisponibles(filtros);
+    const result = await viajeService.listarViajesDisponibles();
     if (result.success) {
       setViajes(result.data);
+      setViajesFiltrados(result.data);
     } else {
       setError(result.error);
+      setViajes([]);
+      setViajesFiltrados([]);
     }
     setLoading(false);
   };
 
-  const handleFiltroChange = (e) => {
-    setFiltros({
-      ...filtros,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleBuscar = () => {
-    cargarViajes();
-  };
-
   const handleLimpiarFiltros = () => {
-    setFiltros({
+    const filtrosLimpios = {
       origen: '',
       destino: '',
-      fecha: ''
-    });
-    cargarViajes();
+      fecha: '',
+      tarifaMin: '',
+      tarifaMax: '',
+      cuposMin: 1
+    };
+    setFiltros(filtrosLimpios);
+    // Los filtros se aplicarán automáticamente y mostrarán todos los viajes
   };
 
   const handleReservarViaje = (viaje) => {
@@ -140,13 +218,7 @@ const ListaViajes = () => {
 
   return (
     <div className="layout">
-      <button 
-        className="mobile-menu-btn"
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-      >
-        ☰
-      </button>
-      <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+      <aside className="sidebar">
         <div className="logo">
           <h2>Wheels</h2>
         </div>
@@ -159,40 +231,21 @@ const ListaViajes = () => {
               🚗 Viajes Disponibles
             </Link>
             <Link to="/mis-reservas" className="nav-link">
-              📋 Mis Reservas (Hoy)
+              📋 Mis Reservas
             </Link>
             <Link to="/perfil" className="nav-link">
               👤 Mi Perfil
             </Link>
           </nav>
           
-          <div className="user-info">
-            <div className="user-avatar">
-              <div className="avatar-placeholder">👤</div>
-            </div>
-            <p className="user-name">{authService.getUser()?.nombre}</p>
-            <button 
-              className="logout-btn"
-              onClick={() => {
-                authService.logout();
-                navigate('/login');
-              }}
-            >
-              Cerrar sesión
-            </button>
-          </div>
+          <UserInfo onLogout={() => navigate('/login')} />
         </aside>
 
       {/* Main Content */}
       <div className="main-content">
         <div className="viajes-header">
-          <h1>Viajes Disponibles - Hoy</h1>
-          <p>Encuentra viajes para el día de hoy ({new Date().toLocaleDateString('es-CO', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-          })})</p>
+          <h1>Viajes Disponibles</h1>
+          <p>Encuentra viajes disponibles para hoy y próximos días. Puedes filtrar por fecha, origen y destino.</p>
         </div>
 
         {/* Filtros */}
@@ -200,9 +253,7 @@ const ListaViajes = () => {
           <div className="filtros-grid">
             <div className="form-group">
               <label htmlFor="origen">Origen</label>
-              <input
-                type="text"
-                id="origen"
+              <UbicacionSelector
                 name="origen"
                 value={filtros.origen}
                 onChange={handleFiltroChange}
@@ -212,9 +263,7 @@ const ListaViajes = () => {
             
             <div className="form-group">
               <label htmlFor="destino">Destino</label>
-              <input
-                type="text"
-                id="destino"
+              <UbicacionSelector
                 name="destino"
                 value={filtros.destino}
                 onChange={handleFiltroChange}
@@ -224,22 +273,88 @@ const ListaViajes = () => {
             
             <div className="form-group">
               <label htmlFor="fecha">Fecha</label>
-              <input
-                type="date"
-                id="fecha"
-                name="fecha"
-                value={filtros.fecha}
-                onChange={handleFiltroChange}
-              />
+              <div className="fecha-input-group">
+                <input
+                  type="date"
+                  id="fecha"
+                  name="fecha"
+                  value={filtros.fecha}
+                  onChange={handleFiltroChange}
+                />
+                <button 
+                  type="button" 
+                  className="btn-fecha-hoy"
+                  onClick={() => setFiltros({...filtros, fecha: new Date().toISOString().split('T')[0]})}
+                  title="Ver viajes de hoy"
+                >
+                  Hoy
+                </button>
+              </div>
             </div>
           </div>
           
-          <div className="filtros-actions">
-            <button onClick={handleBuscar} className="btn-primary">
-              🔍 Buscar
+          {/* Botón para filtros avanzados */}
+          <div className="filtros-toggle">
+            <button 
+              type="button" 
+              className="btn-outline"
+              onClick={() => setMostrarFiltrosAvanzados(!mostrarFiltrosAvanzados)}
+            >
+              {mostrarFiltrosAvanzados ? '🔼 Ocultar filtros avanzados' : '🔽 Mostrar filtros avanzados'}
             </button>
+          </div>
+
+          {/* Filtros avanzados */}
+          {mostrarFiltrosAvanzados && (
+            <div className="filtros-avanzados">
+              <div className="filtros-grid">
+                <div className="form-group">
+                  <label htmlFor="tarifaMin">Tarifa mínima</label>
+                  <input
+                    type="number"
+                    id="tarifaMin"
+                    name="tarifaMin"
+                    value={filtros.tarifaMin}
+                    onChange={handleFiltroChange}
+                    placeholder="Ej: 5000"
+                    min="0"
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label htmlFor="tarifaMax">Tarifa máxima</label>
+                  <input
+                    type="number"
+                    id="tarifaMax"
+                    name="tarifaMax"
+                    value={filtros.tarifaMax}
+                    onChange={handleFiltroChange}
+                    placeholder="Ej: 15000"
+                    min="0"
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label htmlFor="cuposMin">Cupos mínimos disponibles</label>
+                  <select
+                    id="cuposMin"
+                    name="cuposMin"
+                    value={filtros.cuposMin}
+                    onChange={handleFiltroChange}
+                  >
+                    <option value="1">Al menos 1 cupo</option>
+                    <option value="2">Al menos 2 cupos</option>
+                    <option value="3">Al menos 3 cupos</option>
+                    <option value="4">Al menos 4 cupos</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <div className="filtros-actions">
             <button onClick={handleLimpiarFiltros} className="btn-secondary">
-              🗑️ Limpiar
+              🗑️ Limpiar Filtros
             </button>
           </div>
         </div>
@@ -248,79 +363,87 @@ const ListaViajes = () => {
 
         {/* Lista de viajes */}
         <div className="viajes-grid">
-          {viajes.length === 0 ? (
+          {viajesFiltrados.length === 0 ? (
             <div className="no-results">
               <h3>No se encontraron viajes</h3>
               <p>Intenta ajustar los filtros de búsqueda</p>
+              {viajes.length > 0 && (
+                <p><small>Mostrando {viajesFiltrados.length} de {viajes.length} viajes disponibles</small></p>
+              )}
             </div>
           ) : (
-            viajes.map(viaje => (
-              <div key={viaje.id_viaje} className="viaje-card">
-                <div className="viaje-header">
-                  <h3>{viaje.origen} → {viaje.destino}</h3>
-                  <span className="viaje-precio">${viaje.tarifa.toLocaleString()}</span>
-                </div>
-                
-                <div className="viaje-info">
-                  <div className="info-item">
-                    <span className="info-label">📅 Fecha:</span>
-                    <span>{formatearFecha(viaje.fecha_salida)}</span>
-                  </div>
-                  
-                  <div className="info-item">
-                    <span className="info-label">👤 Conductor:</span>
-                    <span>{viaje.nombre_conductor}</span>
-                  </div>
-                  
-                  <div className="info-item">
-                    <span className="info-label">🚗 Vehículo:</span>
-                    <span>{viaje.marca} {viaje.modelo}</span>
-                  </div>
-                  
-                  <div className="info-item">
-                    <span className="info-label">🪑 Cupos:</span>
-                    <span>{viaje.cupos_disponibles} de {viaje.cupos_totales} disponibles</span>
-                  </div>
-
-                  <div className="info-item">
-                    <span className="info-label">📊 Estado:</span>
-                    <span className="estado-viaje">{getEstadoViaje(viaje)}</span>
-                  </div>
-                </div>
-                
-                <div className="viaje-actions">
-                  <button 
-                    className="btn-secondary"
-                    onClick={() => handleVerDetalles(viaje)}
-                  >
-                    👁️ Ver Detalles
-                  </button>
-                  
-                  {puedeReservar(viaje) ? (
-                    <button 
-                      className="btn-primary"
-                      onClick={() => handleReservarViaje(viaje)}
-                    >
-                      🚗 Reservar Cupo
-                    </button>
-                  ) : (
-                    <button 
-                      className="btn-disabled"
-                      disabled
-                      title={
-                        viaje.id_conductor === authService.getUser()?.id_usuario 
-                          ? "Es tu propio viaje" 
-                          : "No disponible para reservas"
-                      }
-                    >
-                      {viaje.id_conductor === authService.getUser()?.id_usuario 
-                        ? "Tu viaje" 
-                        : "No disponible"}
-                    </button>
-                  )}
-                </div>
+            <>
+              <div className="resultados-info">
+                <p>Mostrando {viajesFiltrados.length} viaje{viajesFiltrados.length !== 1 ? 's' : ''} disponible{viajesFiltrados.length !== 1 ? 's' : ''}</p>
               </div>
-            ))
+              {viajesFiltrados.map(viaje => (
+                <div key={viaje.id_viaje} className="viaje-card">
+                  <div className="viaje-header">
+                    <h3>{viaje.origen} → {viaje.destino}</h3>
+                    <span className="viaje-precio">${viaje.tarifa.toLocaleString()}</span>
+                  </div>
+                  
+                  <div className="viaje-info">
+                    <div className="info-item">
+                      <span className="info-label">📅 Fecha:</span>
+                      <span>{formatearFecha(viaje.fecha_salida)}</span>
+                    </div>
+                    
+                    <div className="info-item">
+                      <span className="info-label">👤 Conductor:</span>
+                      <span>{viaje.nombre_conductor}</span>
+                    </div>
+                    
+                    <div className="info-item">
+                      <span className="info-label">🚗 Vehículo:</span>
+                      <span>{viaje.marca} {viaje.modelo}</span>
+                    </div>
+                    
+                    <div className="info-item">
+                      <span className="info-label">🪑 Cupos:</span>
+                      <span>{viaje.cupos_disponibles} de {viaje.cupos_totales} disponibles</span>
+                    </div>
+
+                    <div className="info-item">
+                      <span className="info-label">📊 Estado:</span>
+                      <span className="estado-viaje">{getEstadoViaje(viaje)}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="viaje-actions">
+                    <button 
+                      className="btn-secondary"
+                      onClick={() => handleVerDetalles(viaje)}
+                    >
+                      👁️ Ver Detalles
+                    </button>
+                    
+                    {puedeReservar(viaje) ? (
+                      <button 
+                        className="btn-primary"
+                        onClick={() => handleReservarViaje(viaje)}
+                      >
+                        🚗 Reservar Cupo
+                      </button>
+                    ) : (
+                      <button 
+                        className="btn-disabled"
+                        disabled
+                        title={
+                          viaje.id_conductor === authService.getUser()?.id_usuario 
+                            ? "Es tu propio viaje" 
+                            : "No disponible para reservas"
+                        }
+                      >
+                        {viaje.id_conductor === authService.getUser()?.id_usuario 
+                          ? "Tu viaje" 
+                          : "No disponible"}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </>
           )}
         </div>
       </div>

@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import authService from '../services/auth.service.js';
 import vehiculoService from '../services/vehiculo.service.js';
+import { getImageUrl } from '../utils/imageUtils.js';
+import UserInfo from './UserInfo.jsx';
 import '../App.css';
 
 const MisVehiculos = () => {
   const [vehiculos, setVehiculos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -51,13 +52,7 @@ const MisVehiculos = () => {
   if (loading) {
     return (
       <div className="layout">
-        <button 
-          className="mobile-menu-btn"
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-        >
-          ☰
-        </button>
-        <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+        <aside className="sidebar">
           <div className="logo">
             <h2>Wheels</h2>
           </div>
@@ -86,21 +81,7 @@ const MisVehiculos = () => {
             </Link>
           </nav>
           
-          <div className="user-info">
-            <div className="user-avatar">
-              <div className="avatar-placeholder">👤</div>
-            </div>
-            <p className="user-name">{authService.getUser()?.nombre}</p>
-            <button 
-              className="logout-btn"
-              onClick={() => {
-                authService.logout();
-                navigate('/login');
-              }}
-            >
-              Cerrar sesión
-            </button>
-          </div>
+          <UserInfo onLogout={() => navigate('/login')} />
         </aside>
         <div className="main-content">
           <div className="loading-container">
@@ -113,13 +94,7 @@ const MisVehiculos = () => {
 
   return (
     <div className="layout">
-      <button 
-        className="mobile-menu-btn"
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-      >
-        ☰
-      </button>
-      <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+      <aside className="sidebar">
         <div className="logo">
           <h2>Wheels</h2>
         </div>
@@ -148,21 +123,7 @@ const MisVehiculos = () => {
           </Link>
         </nav>
         
-        <div className="user-info">
-          <div className="user-avatar">
-            <div className="avatar-placeholder">👤</div>
-          </div>
-          <p className="user-name">{authService.getUser()?.nombre}</p>
-          <button 
-            className="logout-btn"
-            onClick={() => {
-              authService.logout();
-              navigate('/login');
-            }}
-          >
-            Cerrar sesión
-          </button>
-        </div>
+        <UserInfo onLogout={() => navigate('/login')} />
       </aside>
 
       <main className="main-content">
@@ -195,7 +156,7 @@ const MisVehiculos = () => {
                 <div className="vehiculo-image">
                   {vehiculo.foto ? (
                     <img 
-                      src={vehiculo.foto.startsWith('http') ? vehiculo.foto : `http://localhost:3001${vehiculo.foto}`} 
+                      src={getImageUrl(vehiculo.foto)} 
                       alt={`${vehiculo.marca} ${vehiculo.modelo}`}
                       onError={(e) => {
                         e.target.style.display = 'none';

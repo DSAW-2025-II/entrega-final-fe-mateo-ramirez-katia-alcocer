@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import authService from '../services/auth.service.js';
 import vehiculoService from '../services/vehiculo.service.js';
+import UserInfo from './UserInfo.jsx';
 import '../App.css';
 
 const RegistrarVehiculo = () => {
@@ -102,21 +103,7 @@ const RegistrarVehiculo = () => {
             </Link>
           </nav>
           
-          <div className="user-info">
-            <div className="user-avatar">
-              <div className="avatar-placeholder">👤</div>
-            </div>
-            <p className="user-name">{authService.getUser()?.nombre}</p>
-            <button 
-              className="logout-btn"
-              onClick={() => {
-                authService.logout();
-                navigate('/login');
-              }}
-            >
-              Cerrar sesión
-            </button>
-          </div>
+          <UserInfo onLogout={() => navigate('/login')} />
         </aside>
 
       <div className="main-content">
