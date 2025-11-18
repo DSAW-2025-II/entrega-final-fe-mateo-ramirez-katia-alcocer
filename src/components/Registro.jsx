@@ -54,11 +54,7 @@ const Registro = () => {
       return;
     }
 
-    console.log('Datos a enviar:', formData);
-
     const result = await authService.register(formData);
-
-    console.log('Resultado del registro:', result);
 
     if (result.success) {
       alert('Registro exitoso. Ahora puedes iniciar sesión.');

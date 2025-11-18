@@ -44,18 +44,9 @@ const MisViajes = ({ isMobileMenuOpen, onCloseMobileMenu }) => {
   const puedeModificarViaje = (viaje) => {
     const fechaViaje = new Date(viaje.fecha_salida);
     const ahora = new Date();
-    const horasRestantes = (fechaViaje - ahora) / (1000 * 60 * 60); // Diferencia en horas
+    const horasRestantes = (fechaViaje - ahora) / (1000 * 60 * 60);
     
-    // Debug para ver qué está pasando
-    console.log('=== DEBUG CANCELAR VIAJE ===');
-    console.log('Fecha del viaje:', viaje.fecha_salida);
-    console.log('Fecha parseada:', fechaViaje);
-    console.log('Fecha actual:', ahora);
-    console.log('Horas restantes:', horasRestantes);
-    console.log('Puede modificar:', horasRestantes > 1);
-    console.log('==========================');
-    
-    return horasRestantes > 1; // Más de 1 hora de anticipación
+    return horasRestantes > 1;
   };
 
   const handleCancelarViaje = async (id_viaje) => {

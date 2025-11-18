@@ -88,8 +88,6 @@ const RegistrarVehiculo = ({ isMobileMenuOpen, onCloseMobileMenu }) => {
       return;
     }
 
-    console.log('Datos del vehículo:', formData);
-
     const result = await vehiculoService.registrarVehiculo(formData);
 
     if (result.success) {
