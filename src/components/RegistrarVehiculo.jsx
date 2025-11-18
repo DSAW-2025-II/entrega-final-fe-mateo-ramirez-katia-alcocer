@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import authService from '../services/auth.service.js';
 import vehiculoService from '../services/vehiculo.service.js';
@@ -15,7 +15,21 @@ const RegistrarVehiculo = ({ isMobileMenuOpen, onCloseMobileMenu }) => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [vehiculosCount, setVehiculosCount] = useState(0);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const verificarVehiculos = async () => {
+      const result = await vehiculoService.listarVehiculosUsuario();
+      if (result.success) {
+        setVehiculosCount(result.data.length);
+        if (result.data.length >= 5) {
+          setError('Ya tienes el máximo de 5 vehículos registrados. Elimina uno antes de agregar otro.');
+        }
+      }
+    };
+    verificarVehiculos();
+  }, []);
 
   const handleChange = (e) => {
     if (e.target.name === 'foto') {
@@ -63,6 +77,13 @@ const RegistrarVehiculo = ({ isMobileMenuOpen, onCloseMobileMenu }) => {
     // Validar capacidad
     if (formData.capacidad < 1 || formData.capacidad > 6) {
       setError('La capacidad debe estar entre 1 y 6 personas');
+      setLoading(false);
+      return;
+    }
+
+    // Validar límite de 5 vehículos
+    if (vehiculosCount >= 5) {
+      setError('Ya tienes el máximo de 5 vehículos registrados. Elimina uno antes de agregar otro.');
       setLoading(false);
       return;
     }
@@ -116,6 +137,11 @@ const RegistrarVehiculo = ({ isMobileMenuOpen, onCloseMobileMenu }) => {
         <div className="welcome-section">
           <h1>Registrar Vehículo</h1>
           <p>Ingresa los datos de tu vehículo para empezar a ofrecer viajes como conductor.</p>
+          {vehiculosCount > 0 && (
+            <p style={{ color: '#666', fontSize: '0.9rem', marginTop: '0.5rem' }}>
+              Vehículos registrados: {vehiculosCount} / 5
+            </p>
+          )}
         </div>
 
         <div className="form-container">
