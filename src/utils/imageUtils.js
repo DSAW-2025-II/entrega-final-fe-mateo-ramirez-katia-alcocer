@@ -13,7 +13,7 @@ const getServerBaseUrl = () => {
     return 'http://localhost:5000';
   } else {
     // En producción, usar la URL de producción por defecto
-    return 'https://bewheels-xmjl.onrender.com';
+    return 'https://entrega-final-be-mateo-ramirez-katia.onrender.com';
   }
 };
 

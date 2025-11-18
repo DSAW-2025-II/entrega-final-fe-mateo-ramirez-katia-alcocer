@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://bewheels-xmjl.onrender.com/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://entrega-final-be-mateo-ramirez-katia.onrender.com/api';
 
 class AuthService {
   constructor() {

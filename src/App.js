@@ -27,7 +27,7 @@ function App() {
 
   useEffect(() => {
     axios
-      .get("https://bewheels-xmjl.onrender.com/")
+      .get("https://entrega-final-be-mateo-ramirez-katia.onrender.com/")
       .then((res) => setMensaje("API Wheels funcionando"))
       .catch(() => setMensaje("No se pudo conectar con el servidor"));
       
