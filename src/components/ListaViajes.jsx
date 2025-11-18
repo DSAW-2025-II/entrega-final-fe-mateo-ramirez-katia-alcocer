@@ -177,9 +177,15 @@ const ListaViajes = ({ isMobileMenuOpen, onCloseMobileMenu }) => {
   };
 
   const handleReservaCreada = () => {
+    // Cerrar el modal primero
+    setMostrarReserva(false);
+    setViajeSeleccionado(null);
+    
     // Recargar los viajes para actualizar cupos
-    cargarViajes();
-    alert('¡Reserva enviada con éxito! El conductor recibirá tu solicitud.');
+    cargarViajesSinFiltros();
+    
+    // Mostrar mensaje de éxito
+    alert('¡Reserva confirmada exitosamente! Tu cupo ha sido reservado automáticamente.');
   };
 
   const puedeReservar = (viaje) => {
@@ -251,7 +257,7 @@ const ListaViajes = ({ isMobileMenuOpen, onCloseMobileMenu }) => {
       {/* Main Content */}
       <div className="main-content">
         <div className="viajes-header">
-          <h1>Viajes Disponibles</h1>
+    <h1>Viajes Disponibles</h1>
           <p>Encuentra viajes disponibles para hoy y próximos días. Puedes filtrar por fecha, origen y destino.</p>
         </div>
 
@@ -491,8 +497,8 @@ const ListaViajes = ({ isMobileMenuOpen, onCloseMobileMenu }) => {
           onReservar={handleReservarViaje}
         />
       )}
-    </div>
-  );
+  </div>
+);
 };
 
 export default ListaViajes;

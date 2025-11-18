@@ -37,16 +37,29 @@ const ReservarViaje = ({ viaje, onClose, onReservaCreada }) => {
       punto_destino: formData.punto_destino.trim() || null
     };
 
-    const result = await reservaService.crearReserva(datosReserva);
-    
-    if (result.success) {
-      onReservaCreada?.();
-      onClose();
-    } else {
-      setError(result.error);
+    try {
+      const result = await reservaService.crearReserva(datosReserva);
+      
+      if (result.success) {
+        // Resetear el estado antes de cerrar
+        setLoading(false);
+        setFormData({
+          cupos_reservados: 1,
+          punto_recogida: '',
+          punto_destino: ''
+        });
+        
+        // Llamar al callback y cerrar el modal
+        onReservaCreada?.();
+        onClose();
+      } else {
+        setError(result.error);
+        setLoading(false);
+      }
+    } catch (err) {
+      setError(err.message || 'Error al crear la reserva');
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
   const generarOpcionesCupos = () => {
