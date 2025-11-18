@@ -1202,6 +1202,16 @@ nav {
   justify-content: center;
 }
 
+@media (max-width: 768px) {
+  .mobile-menu-toggle {
+    display: flex !important;
+  }
+  
+  .mobile-menu-overlay {
+    display: block !important;
+  }
+}
+
 .mobile-menu-toggle:hover {
   transform: scale(1.1);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
@@ -1222,6 +1232,12 @@ nav {
 
 .mobile-menu-overlay.open {
   opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-overlay {
+    display: block !important;
+  }
 }
 
 /* Colores de botones mejorados */
