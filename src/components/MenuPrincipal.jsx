@@ -5,7 +5,7 @@ import vehiculoService from '../services/vehiculo.service.js';
 import rolService from '../services/rol.service.js';
 import '../App.css';
 
-const MenuPrincipal = () => {
+const MenuPrincipal = ({ isMobileMenuOpen, onCloseMobileMenu }) => {
   const navigate = useNavigate();
 
   useEffect(() => {

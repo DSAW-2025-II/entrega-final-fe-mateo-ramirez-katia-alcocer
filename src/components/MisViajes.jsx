@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import authService from '../services/auth.service.js';
 import viajeService from '../services/viaje.service.js';
+import { getImageUrl } from '../utils/imageUtils.js';
 import DetallesViaje from './DetallesViaje.jsx';
 import UserInfo from './UserInfo.jsx';
 import '../App.css';
 
-const MisViajes = () => {
+const MisViajes = ({ isMobileMenuOpen, onCloseMobileMenu }) => {
   const [viajes, setViajes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -112,34 +113,40 @@ const MisViajes = () => {
     });
   };
 
+  const handleNavClick = () => {
+    if (onCloseMobileMenu) {
+      onCloseMobileMenu();
+    }
+  };
+
   if (loading) {
     return (
       <div className="layout">
-        <aside className="sidebar">
+        <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
           <div className="logo">
             <h2>Wheels</h2>
           </div>
           
           <nav>
-            <Link to="/menu" className="nav-link">
+            <Link to="/menu" className="nav-link" onClick={handleNavClick}>
               🏠 Inicio
             </Link>
-            <Link to="/viajes/crear" className="nav-link">
+            <Link to="/viajes/crear" className="nav-link" onClick={handleNavClick}>
               ➕ Crear Viaje
             </Link>
-            <Link to="/mis-viajes" className="nav-link active">
+            <Link to="/mis-viajes" className="nav-link active" onClick={handleNavClick}>
               🗺️ Mis Viajes
             </Link>
-            <Link to="/viajes" className="nav-link">
+            <Link to="/viajes" className="nav-link" onClick={handleNavClick}>
               🚗 Viajes Disponibles
             </Link>
-            <Link to="/mis-reservas" className="nav-link">
+            <Link to="/mis-reservas" className="nav-link" onClick={handleNavClick}>
               📋 Mis Reservas
             </Link>
-            <Link to="/mis-vehiculos" className="nav-link">
+            <Link to="/mis-vehiculos" className="nav-link" onClick={handleNavClick}>
               🚙 Mis Vehículos
             </Link>
-            <Link to="/perfil" className="nav-link">
+            <Link to="/perfil" className="nav-link" onClick={handleNavClick}>
               👤 Mi Perfil
             </Link>
           </nav>
@@ -157,31 +164,31 @@ const MisViajes = () => {
 
   return (
     <div className="layout">
-      <aside className="sidebar">
+      <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
         <div className="logo">
           <h2>Wheels</h2>
         </div>
         
         <nav>
-          <Link to="/menu" className="nav-link">
+          <Link to="/menu" className="nav-link" onClick={handleNavClick}>
             🏠 Inicio
           </Link>
-          <Link to="/viajes/crear" className="nav-link">
+          <Link to="/viajes/crear" className="nav-link" onClick={handleNavClick}>
             ➕ Crear Viaje
           </Link>
-          <Link to="/mis-viajes" className="nav-link active">
+          <Link to="/mis-viajes" className="nav-link active" onClick={handleNavClick}>
             🗺️ Mis Viajes
           </Link>
-          <Link to="/viajes" className="nav-link">
+          <Link to="/viajes" className="nav-link" onClick={handleNavClick}>
             🚗 Viajes Disponibles
           </Link>
-          <Link to="/mis-reservas" className="nav-link">
+          <Link to="/mis-reservas" className="nav-link" onClick={handleNavClick}>
             📋 Mis Reservas (Hoy)
           </Link>
-          <Link to="/mis-vehiculos" className="nav-link">
+          <Link to="/mis-vehiculos" className="nav-link" onClick={handleNavClick}>
             🚙 Mis Vehículos
           </Link>
-          <Link to="/perfil" className="nav-link">
+          <Link to="/perfil" className="nav-link" onClick={handleNavClick}>
             👤 Mi Perfil
           </Link>
         </nav>
@@ -202,7 +209,7 @@ const MisViajes = () => {
             <div className="no-results">
               <h3>No tienes viajes para hoy</h3>
               <p>¡Anímate a ofrecer un viaje para el día de hoy!</p>
-              <Link to="/viajes/crear" className="btn-primary" style={{marginTop: '1rem'}}>
+              <Link to="/viajes/crear" className="btn-success" style={{marginTop: '1rem'}}>
                 Crear Nuevo Viaje
               </Link>
             </div>
@@ -213,29 +220,49 @@ const MisViajes = () => {
                   <h3>{viaje.origen} → {viaje.destino}</h3>
                   <span className={`viaje-estado ${viaje.estado.toLowerCase()}`}>{viaje.estado}</span>
                 </div>
-                <div className="viaje-info">
-                  <div className="info-item">
-                    <span className="info-label">📅 Fecha:</span>
-                    <span>{formatearFecha(viaje.fecha_salida)}</span>
-                  </div>
-                  <div className="info-item">
-                    <span className="info-label">🪑 Cupos:</span>
-                    <span>{viaje.cupos_disponibles} de {viaje.cupos_totales}</span>
-                  </div>
-                  <div className="info-item">
-                    <span className="info-label">💲 Tarifa:</span>
-                    <span>${viaje.tarifa?.toLocaleString()}</span>
-                  </div>
-                  {viaje.marca && viaje.modelo && (
-                    <div className="info-item">
-                      <span className="info-label">🚗 Vehículo:</span>
-                      <span>{viaje.marca} {viaje.modelo} - {viaje.placa}</span>
+                
+                <div className="viaje-content">
+                  <div className="vehiculo-image-section">
+                    {viaje.foto ? (
+                      <img 
+                        src={getImageUrl(viaje.foto)} 
+                        alt={`${viaje.marca} ${viaje.modelo}`}
+                        className="vehiculo-foto"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <div className="vehiculo-placeholder" style={{display: viaje.foto ? 'none' : 'flex'}}>
+                      🚗
                     </div>
-                  )}
+                  </div>
+                  
+                  <div className="viaje-info">
+                    <div className="info-item">
+                      <span className="info-label">📅 Fecha:</span>
+                      <span>{formatearFecha(viaje.fecha_salida)}</span>
+                    </div>
+                    <div className="info-item">
+                      <span className="info-label">🪑 Cupos:</span>
+                      <span>{viaje.cupos_disponibles} de {viaje.cupos_totales}</span>
+                    </div>
+                    <div className="info-item">
+                      <span className="info-label">💲 Tarifa:</span>
+                      <span>${viaje.tarifa?.toLocaleString()}</span>
+                    </div>
+                    {viaje.marca && viaje.modelo && (
+                      <div className="info-item">
+                        <span className="info-label">🚗 Vehículo:</span>
+                        <span>{viaje.marca} {viaje.modelo} - {viaje.placa}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div className="viaje-actions">
                   <button 
-                    className="btn-secondary"
+                    className="btn-primary"
                     onClick={() => handleVerDetalles(viaje)}
                   >
                     👁️ Ver Detalles

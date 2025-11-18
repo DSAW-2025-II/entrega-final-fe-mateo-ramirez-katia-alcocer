@@ -4,7 +4,7 @@ import authService from '../services/auth.service.js';
 import { getImageUrl } from '../utils/imageUtils.js';
 import '../App.css';
 
-const Perfil = () => {
+const Perfil = ({ isMobileMenuOpen, onCloseMobileMenu }) => {
   const navigate = useNavigate();
   const [perfil, setPerfil] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -127,28 +127,34 @@ const Perfil = () => {
     );
   }
 
+  const handleNavClick = () => {
+    if (onCloseMobileMenu) {
+      onCloseMobileMenu();
+    }
+  };
+
   return (
     <div className="layout">
-      <aside className="sidebar">
+      <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <div className="logo">
             <h2>Wheels</h2>
           </div>
         </div>
         <nav>
-          <Link to="/menu" className="nav-link">
+          <Link to="/menu" className="nav-link" onClick={handleNavClick}>
             🏠 Inicio
           </Link>
-          <Link to="/viajes" className="nav-link">
+          <Link to="/viajes" className="nav-link" onClick={handleNavClick}>
             🚗 Viajes Disponibles
           </Link>
-          <Link to="/mis-reservas" className="nav-link">
+          <Link to="/mis-reservas" className="nav-link" onClick={handleNavClick}>
             📋 Mis Reservas
           </Link>
-          <Link to="/mis-vehiculos" className="nav-link">
+          <Link to="/mis-vehiculos" className="nav-link" onClick={handleNavClick}>
             🚙 Mis Vehículos
           </Link>
-          <Link to="/perfil" className="nav-link active">
+          <Link to="/perfil" className="nav-link active" onClick={handleNavClick}>
             👤 Mi Perfil
           </Link>
         </nav>
@@ -231,7 +237,7 @@ const Perfil = () => {
                   <span style={{ fontSize: '4rem', color: '#667eea' }}>👤</span>
                 )}
               </div>
-              <label className="btn-secondary" style={{ cursor: 'pointer', display: 'inline-block' }}>
+              <label className="btn-primary" style={{ cursor: 'pointer', display: 'inline-block' }}>
                 📷 Cambiar foto
                 <input 
                   type="file" 
@@ -364,7 +370,7 @@ const Perfil = () => {
                   </>
                 )}
 
-                <button type="submit" className="btn-primary" disabled={saving} style={{ marginTop: '1rem' }}>
+                <button type="submit" className="btn-success" disabled={saving} style={{ marginTop: '1rem' }}>
                   {saving ? 'Guardando...' : '💾 Guardar cambios'}
                 </button>
               </form>

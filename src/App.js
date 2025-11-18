@@ -15,10 +15,15 @@ import Registro from "./components/Registro";
 import RegistrarVehiculo from "./components/RegistrarVehiculo";
 import Perfil from "./components/Perfil";
 import NotificacionesToast from "./components/NotificacionesToast";
+import MobileMenuToggle from "./components/MobileMenuToggle";
+import MobileMenuOverlay from "./components/MobileMenuOverlay";
+import { useMobileMenu } from "./hooks/useMobileMenu";
+import "./App.css";
 
 function App() {
   const [mensaje, setMensaje] = useState("Cargando...");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isMobileMenuOpen, isMobile, toggleMobileMenu, closeMobileMenu } = useMobileMenu();
 
   useEffect(() => {
     axios
@@ -36,6 +41,20 @@ function App() {
       {/* Mostrar notificaciones solo si el usuario está logueado */}
       {isLoggedIn && <NotificacionesToast />}
       
+      {/* Botón del menú móvil - solo en páginas con sidebar */}
+      {isLoggedIn && isMobile && (
+        <>
+          <MobileMenuToggle 
+            isOpen={isMobileMenuOpen} 
+            onToggle={toggleMobileMenu} 
+          />
+          <MobileMenuOverlay 
+            isOpen={isMobileMenuOpen} 
+            onClose={closeMobileMenu} 
+          />
+        </>
+      )}
+      
       <Routes>
         <Route
           path="/"
@@ -50,7 +69,7 @@ function App() {
                   <a href="/login" className="btn-primary welcome-btn">
                     Iniciar Sesión
                   </a>
-                  <a href="/registro" className="btn-secondary welcome-btn">
+                  <a href="/registro" className="btn-success welcome-btn">
                     Registrarse
                   </a>
                 </div>
@@ -60,17 +79,72 @@ function App() {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/registro" element={<Registro />} />
-            <Route path="/menu" element={<MenuPrincipal />} />
-            <Route path="/menu-pasajero" element={<MenuPasajero />} />
-            <Route path="/menu-conductor" element={<MenuConductor />} />
-            <Route path="/viajes" element={<ListaViajes />} />
-            <Route path="/viajes/crear" element={<CrearViaje />} />
-            <Route path="/mis-viajes" element={<MisViajes />} />
-            <Route path="/mis-reservas" element={<MisReservas />} />
-            <Route path="/gestionar-solicitudes" element={<GestionarSolicitudes />} />
-            <Route path="/mis-vehiculos" element={<MisVehiculos />} />
-            <Route path="/registrar-vehiculo" element={<RegistrarVehiculo />} />
-            <Route path="/perfil" element={<Perfil />} />
+        <Route path="/menu" element={
+          <MenuPrincipal 
+            isMobileMenuOpen={isMobileMenuOpen} 
+            onCloseMobileMenu={closeMobileMenu} 
+          />
+        } />
+        <Route path="/menu-pasajero" element={
+          <MenuPasajero 
+            isMobileMenuOpen={isMobileMenuOpen} 
+            onCloseMobileMenu={closeMobileMenu} 
+          />
+        } />
+        <Route path="/menu-conductor" element={
+          <MenuConductor 
+            isMobileMenuOpen={isMobileMenuOpen} 
+            onCloseMobileMenu={closeMobileMenu} 
+          />
+        } />
+        <Route path="/viajes" element={
+          <ListaViajes 
+            isMobileMenuOpen={isMobileMenuOpen} 
+            onCloseMobileMenu={closeMobileMenu} 
+          />
+        } />
+        <Route path="/viajes/crear" element={
+          <CrearViaje 
+            isMobileMenuOpen={isMobileMenuOpen} 
+            onCloseMobileMenu={closeMobileMenu} 
+          />
+        } />
+        <Route path="/mis-viajes" element={
+          <MisViajes 
+            isMobileMenuOpen={isMobileMenuOpen} 
+            onCloseMobileMenu={closeMobileMenu} 
+          />
+        } />
+        <Route path="/mis-reservas" element={
+          <MisReservas 
+            isMobileMenuOpen={isMobileMenuOpen} 
+            onCloseMobileMenu={closeMobileMenu} 
+          />
+        } />
+        <Route path="/gestionar-solicitudes" element={
+          <GestionarSolicitudes 
+            isMobileMenuOpen={isMobileMenuOpen} 
+            onCloseMobileMenu={closeMobileMenu} 
+          />
+        } />
+        <Route path="/mis-vehiculos" element={
+          <MisVehiculos 
+            isMobileMenuOpen={isMobileMenuOpen} 
+            onCloseMobileMenu={closeMobileMenu} 
+          />
+        } />
+        <Route path="/registrar-vehiculo" element={
+          <RegistrarVehiculo 
+            isMobileMenuOpen={isMobileMenuOpen} 
+            onCloseMobileMenu={closeMobileMenu} 
+          />
+        } />
+        <Route path="/perfil" element={
+          <Perfil 
+            isMobileMenuOpen={isMobileMenuOpen} 
+            onCloseMobileMenu={closeMobileMenu} 
+          />
+        } />
       </Routes>
     </Router>
   );

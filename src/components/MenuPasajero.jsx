@@ -4,7 +4,7 @@ import authService from "../services/auth.service.js";
 import UserInfo from './UserInfo.jsx';
 import "../App.css";
 
-const MenuPasajero = () => {
+const MenuPasajero = ({ isMobileMenuOpen, onCloseMobileMenu }) => {
   const navigate = useNavigate();
   const [usuario, setUsuario] = useState(null);
 
@@ -17,28 +17,32 @@ const MenuPasajero = () => {
     }
   }, [navigate]);
 
+  const handleNavClick = () => {
+    if (onCloseMobileMenu) {
+      onCloseMobileMenu();
+    }
+  };
+
   return (
     <div className="layout">
-      <aside className="sidebar">
-            <div className="sidebar-header">
-              <div className="logo">
-                <h2>Wheels</h2>
-              </div>
-            </div>
+      <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
+        <div className="logo">
+          <h2>Wheels</h2>
+        </div>
         <nav>
-          <Link to="/menu" className="nav-link">
+          <Link to="/menu" className="nav-link" onClick={handleNavClick}>
             🏠 Inicio
           </Link>
-              <Link to="/viajes" className="nav-link">
-                🚗 Viajes Disponibles
-              </Link>
-              <Link to="/mis-reservas" className="nav-link">
-                📋 Mis Reservas
-              </Link>
-          <Link to="/registrar-vehiculo" className="nav-link">
+          <Link to="/viajes" className="nav-link" onClick={handleNavClick}>
+            🚗 Viajes Disponibles
+          </Link>
+          <Link to="/mis-reservas" className="nav-link" onClick={handleNavClick}>
+            📋 Mis Reservas
+          </Link>
+          <Link to="/registrar-vehiculo" className="nav-link" onClick={handleNavClick}>
             🚙 Añadir Vehículo
           </Link>
-          <Link to="/perfil" className="nav-link">
+          <Link to="/perfil" className="nav-link" onClick={handleNavClick}>
             👤 Mi Perfil
           </Link>
         </nav>
@@ -59,17 +63,17 @@ const MenuPasajero = () => {
             <Link to="/viajes" className="btn-primary">Ver Viajes</Link>
           </div>
           
-              <div className="action-card">
-                <h3>🚙 Ser Conductor</h3>
-                <p>Registra tu vehículo y ofrece viajes</p>
-                <Link to="/registrar-vehiculo" className="btn-secondary">Añadir Vehículo</Link>
-              </div>
-              
-              <div className="action-card">
-                <h3>📋 Mis Reservas</h3>
-                <p>Gestiona tus reservas como pasajero</p>
-                <Link to="/mis-reservas" className="btn-secondary">Ver Reservas</Link>
-              </div>
+          <div className="action-card">
+            <h3>🚙 Ser Conductor</h3>
+            <p>Registra tu vehículo y ofrece viajes</p>
+            <Link to="/registrar-vehiculo" className="btn-warning">Añadir Vehículo</Link>
+          </div>
+          
+          <div className="action-card">
+            <h3>📋 Mis Reservas</h3>
+            <p>Gestiona tus reservas como pasajero</p>
+            <Link to="/mis-reservas" className="btn-primary">Ver Reservas</Link>
+          </div>
         </div>
       </main>
     </div>

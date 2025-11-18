@@ -5,7 +5,7 @@ import reservaService from '../services/reserva.service.js';
 import UserInfo from './UserInfo.jsx';
 import '../App.css';
 
-const GestionarSolicitudes = () => {
+const GestionarSolicitudes = ({ isMobileMenuOpen, onCloseMobileMenu }) => {
   const [reservas, setReservas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -83,13 +83,19 @@ const GestionarSolicitudes = () => {
       case 'Rechazada': return '#dc3545';
       case 'Cancelada': return '#6c757d';
       default: return '#000';
+    };
+  };
+
+  const handleNavClick = () => {
+    if (onCloseMobileMenu) {
+      onCloseMobileMenu();
     }
   };
 
   if (loading) {
     return (
       <div className="layout">
-        <aside className="sidebar">
+        <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
           <div className="logo">
             <h2>Wheels</h2>
           </div>
@@ -107,34 +113,34 @@ const GestionarSolicitudes = () => {
 
   return (
     <div className="layout">
-      <aside className="sidebar">
+      <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
         <div className="logo">
           <h2>Wheels</h2>
         </div>
         
         <nav>
-          <Link to="/menu" className="nav-link">
+          <Link to="/menu" className="nav-link" onClick={handleNavClick}>
             🏠 Inicio
           </Link>
-          <Link to="/viajes/crear" className="nav-link">
+          <Link to="/viajes/crear" className="nav-link" onClick={handleNavClick}>
             ➕ Crear Viaje
           </Link>
-          <Link to="/mis-viajes" className="nav-link">
+          <Link to="/mis-viajes" className="nav-link" onClick={handleNavClick}>
             🗺️ Mis Viajes
           </Link>
-          <Link to="/viajes" className="nav-link">
+          <Link to="/viajes" className="nav-link" onClick={handleNavClick}>
             🚗 Viajes Disponibles
           </Link>
-          <Link to="/mis-reservas" className="nav-link">
+          <Link to="/mis-reservas" className="nav-link" onClick={handleNavClick}>
             📋 Mis Reservas
           </Link>
-          <Link to="/gestionar-solicitudes" className="nav-link active">
+          <Link to="/gestionar-solicitudes" className="nav-link active" onClick={handleNavClick}>
             📥 Gestionar Solicitudes
           </Link>
-          <Link to="/mis-vehiculos" className="nav-link">
+          <Link to="/mis-vehiculos" className="nav-link" onClick={handleNavClick}>
             🚙 Mis Vehículos
           </Link>
-          <Link to="/perfil" className="nav-link">
+          <Link to="/perfil" className="nav-link" onClick={handleNavClick}>
             👤 Mi Perfil
           </Link>
           </nav>
@@ -153,7 +159,7 @@ const GestionarSolicitudes = () => {
             <div className="no-results">
               <h3>No tienes solicitudes pendientes</h3>
               <p>Cuando alguien solicite un cupo en tus viajes, aparecerán aquí.</p>
-              <Link to="/viajes/crear" className="btn-primary" style={{marginTop: '1rem'}}>
+              <Link to="/viajes/crear" className="btn-success" style={{marginTop: '1rem'}}>
                 Crear Nuevo Viaje
               </Link>
             </div>

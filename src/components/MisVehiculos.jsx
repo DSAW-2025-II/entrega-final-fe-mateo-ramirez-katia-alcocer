@@ -6,7 +6,7 @@ import { getImageUrl } from '../utils/imageUtils.js';
 import UserInfo from './UserInfo.jsx';
 import '../App.css';
 
-const MisVehiculos = () => {
+const MisVehiculos = ({ isMobileMenuOpen, onCloseMobileMenu }) => {
   const [vehiculos, setVehiculos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -49,10 +49,16 @@ const MisVehiculos = () => {
     }
   };
 
+  const handleNavClick = () => {
+    if (onCloseMobileMenu) {
+      onCloseMobileMenu();
+    }
+  };
+
   if (loading) {
     return (
       <div className="layout">
-        <aside className="sidebar">
+        <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
           <div className="logo">
             <h2>Wheels</h2>
           </div>
@@ -94,31 +100,31 @@ const MisVehiculos = () => {
 
   return (
     <div className="layout">
-      <aside className="sidebar">
+      <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
         <div className="logo">
           <h2>Wheels</h2>
         </div>
         
         <nav>
-          <Link to="/menu" className="nav-link">
+          <Link to="/menu" className="nav-link" onClick={handleNavClick}>
             🏠 Inicio
           </Link>
-          <Link to="/viajes/crear" className="nav-link">
+          <Link to="/viajes/crear" className="nav-link" onClick={handleNavClick}>
             ➕ Crear Viaje
           </Link>
-          <Link to="/mis-viajes" className="nav-link">
+          <Link to="/mis-viajes" className="nav-link" onClick={handleNavClick}>
             🗺️ Mis Viajes
           </Link>
-          <Link to="/viajes" className="nav-link">
+          <Link to="/viajes" className="nav-link" onClick={handleNavClick}>
             🚗 Viajes Disponibles
           </Link>
-          <Link to="/mis-reservas" className="nav-link">
+          <Link to="/mis-reservas" className="nav-link" onClick={handleNavClick}>
             📋 Mis Reservas
           </Link>
-          <Link to="/registrar-vehiculo" className="nav-link active">
+          <Link to="/registrar-vehiculo" className="nav-link active" onClick={handleNavClick}>
             ➕ Añadir Vehículo
           </Link>
-          <Link to="/perfil" className="nav-link">
+          <Link to="/perfil" className="nav-link" onClick={handleNavClick}>
             👤 Mi Perfil
           </Link>
         </nav>
@@ -136,7 +142,7 @@ const MisVehiculos = () => {
 
         <div className="vehiculos-header">
           <h2>Vehículos Registrados ({vehiculos.length}/5)</h2>
-          <Link to="/registrar-vehiculo" className="btn-primary">
+          <Link to="/registrar-vehiculo" className="btn-success">
             ➕ Añadir Nuevo Vehículo
           </Link>
         </div>
@@ -145,7 +151,7 @@ const MisVehiculos = () => {
           <div className="no-results">
             <h3>No tienes vehículos registrados</h3>
             <p>Registra tu primer vehículo para empezar a ofrecer viajes</p>
-            <Link to="/registrar-vehiculo" className="btn-primary" style={{marginTop: '1rem'}}>
+            <Link to="/registrar-vehiculo" className="btn-success" style={{marginTop: '1rem'}}>
               Registrar Primer Vehículo
             </Link>
           </div>
@@ -179,7 +185,7 @@ const MisVehiculos = () => {
                 
                 <div className="vehiculo-actions">
                   <button 
-                    className="btn-secondary"
+                    className="btn-danger"
                     onClick={() => handleEliminarVehiculo(vehiculo.id_vehiculo)}
                   >
                     🗑️ Eliminar
@@ -192,7 +198,7 @@ const MisVehiculos = () => {
 
         {vehiculos.length > 0 && vehiculos.length < 5 && (
           <div className="add-vehicle-section">
-            <Link to="/registrar-vehiculo" className="btn-primary">
+            <Link to="/registrar-vehiculo" className="btn-success">
               ➕ Añadir Otro Vehículo
             </Link>
           </div>

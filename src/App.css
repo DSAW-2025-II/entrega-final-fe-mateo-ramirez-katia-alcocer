@@ -20,24 +20,104 @@ body {
   min-height: 100vh;
 }
 
+/* Layout principal */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
 .sidebar {
-  width: 250px;
+  width: 280px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   padding: 1rem;
   display: flex;
   flex-direction: column;
   box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-}
-
-.mobile-menu-btn {
-  display: none;
+  overflow-y: auto;
 }
 
 .main-content {
   flex: 1;
   padding: 2rem;
   background-color: #f8f9fa;
+}
+
+/* Estilos de escritorio - mantener diseño original */
+@media (min-width: 769px) {
+  .mobile-menu-toggle {
+    display: none !important;
+  }
+  
+  .mobile-menu-overlay {
+    display: none !important;
+  }
+  
+  .app-container,
+  .layout {
+    display: flex;
+  }
+  
+  .sidebar {
+    width: 280px;
+    position: relative;
+    transform: none;
+  }
+  
+  .main-content {
+    flex: 1;
+    padding: 2rem;
+  }
+}
+
+/* Estilos móviles - menú colapsible */
+@media (max-width: 768px) {
+  .mobile-menu-toggle {
+    display: flex !important;
+  }
+  
+  .app-container,
+  .layout {
+    position: relative;
+  }
+  
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 280px;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 1001;
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  
+  .mobile-menu-overlay {
+    display: block;
+  }
+  
+  .mobile-menu-overlay.open {
+    display: block;
+  }
+  
+  .main-content {
+    width: 100%;
+    padding: 1rem;
+    padding-top: 5rem;
+  }
+}
+
+.mobile-menu-btn {
+  display: none;
 }
 
 .logo h2 {
@@ -587,6 +667,43 @@ nav {
   transform: translateY(-5px);
 }
 
+.viaje-content {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.vehiculo-image-section {
+  flex-shrink: 0;
+  width: 120px;
+  height: 90px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vehiculo-foto {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.vehiculo-placeholder {
+  font-size: 2rem;
+  color: #6c757d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 8px;
+}
+
 .viaje-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -1063,38 +1180,155 @@ nav {
   border-top: 2px solid #e1e5e9;
 }
 
-/* Estilos globales para el botón hamburguesa en todas las vistas */
-.mobile-menu-btn {
-  display: block;
+/* Estilos para menú móvil mejorado */
+.mobile-menu-toggle {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1002;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  width: 50px;
+  height: 50px;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-menu-toggle:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.mobile-menu-overlay {
+  display: none;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1001;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.mobile-menu-overlay.open {
+  opacity: 1;
+}
+
+/* Colores de botones mejorados */
+.btn-primary {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  padding: 1rem;
-  font-size: 1.2rem;
-  cursor: pointer;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  transition: background 0.3s ease;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-weight: bold;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  height: 60px;
-}
-
-.mobile-menu-btn .menu-text {
-  font-size: 1.1rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
   font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
 }
 
-.mobile-menu-btn .menu-icon {
-  font-size: 1.5rem;
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(231, 76, 60, 0.3);
+}
+
+.btn-danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(39, 174, 96, 0.3);
+}
+
+.btn-success:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
+}
+
+.btn-warning {
+  background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(243, 156, 18, 0.3);
+}
+
+.btn-warning:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
+}
+
+.btn-outline {
+  background: transparent;
+  color: #667eea;
+  border: 2px solid #667eea;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-outline:hover {
+  background: #667eea;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
 .mobile-menu-btn:hover {
@@ -1462,6 +1696,22 @@ nav {
   .nav-link {
     padding: 0.5rem;
     font-size: 0.9rem;
+  }
+  
+  /* Responsive para imágenes de vehículos en móvil */
+  .viaje-content {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .vehiculo-image-section {
+    width: 100%;
+    height: 120px;
+    margin-bottom: 0.5rem;
+  }
+  
+  .viaje-info {
+    margin-top: 0.5rem;
   }
   
   .user-info {

@@ -139,10 +139,10 @@ const ReservarViaje = ({ viaje, onClose, onReservaCreada }) => {
             </div>
 
             <div className="form-actions">
-              <button type="button" onClick={onClose} className="btn-secondary">
+              <button type="button" onClick={onClose} className="btn-warning">
                 Cancelar
               </button>
-              <button type="submit" className="btn-primary" disabled={loading}>
+              <button type="submit" className="btn-success" disabled={loading}>
                 {loading ? 'Enviando solicitud...' : '🚗 Reservar cupos'}
               </button>
             </div>

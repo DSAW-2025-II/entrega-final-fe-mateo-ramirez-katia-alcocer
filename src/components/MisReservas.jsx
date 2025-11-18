@@ -5,7 +5,7 @@ import reservaService from '../services/reserva.service.js';
 import UserInfo from './UserInfo.jsx';
 import '../App.css';
 
-const MisReservas = () => {
+const MisReservas = ({ isMobileMenuOpen, onCloseMobileMenu }) => {
   const [reservas, setReservas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -115,34 +115,40 @@ const MisReservas = () => {
     return ['Pendiente', 'Aceptada'].includes(reserva.estado) && horasRestantes > 1;
   };
 
+  const handleNavClick = () => {
+    if (onCloseMobileMenu) {
+      onCloseMobileMenu();
+    }
+  };
+
   if (loading) {
     return (
       <div className="layout">
-        <aside className="sidebar">
+        <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
           <div className="logo">
             <h2>Wheels</h2>
           </div>
           
           <nav>
-            <Link to="/menu" className="nav-link">
+            <Link to="/menu" className="nav-link" onClick={handleNavClick}>
               🏠 Inicio
             </Link>
-            <Link to="/viajes/crear" className="nav-link">
+            <Link to="/viajes/crear" className="nav-link" onClick={handleNavClick}>
               ➕ Crear Viaje
             </Link>
-            <Link to="/mis-viajes" className="nav-link">
+            <Link to="/mis-viajes" className="nav-link" onClick={handleNavClick}>
               🗺️ Mis Viajes
             </Link>
-            <Link to="/viajes" className="nav-link">
+            <Link to="/viajes" className="nav-link" onClick={handleNavClick}>
               🚗 Viajes Disponibles
             </Link>
-            <Link to="/mis-reservas" className="nav-link active">
+            <Link to="/mis-reservas" className="nav-link active" onClick={handleNavClick}>
               📋 Mis Reservas
             </Link>
-            <Link to="/mis-vehiculos" className="nav-link">
+            <Link to="/mis-vehiculos" className="nav-link" onClick={handleNavClick}>
               🚙 Mis Vehículos
             </Link>
-            <Link to="/perfil" className="nav-link">
+            <Link to="/perfil" className="nav-link" onClick={handleNavClick}>
               👤 Mi Perfil
             </Link>
           </nav>
@@ -160,31 +166,31 @@ const MisReservas = () => {
 
   return (
     <div className="layout">
-      <aside className="sidebar">
+      <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
         <div className="logo">
           <h2>Wheels</h2>
         </div>
         
         <nav>
-          <Link to="/menu" className="nav-link">
+          <Link to="/menu" className="nav-link" onClick={handleNavClick}>
             🏠 Inicio
           </Link>
-          <Link to="/viajes/crear" className="nav-link">
+          <Link to="/viajes/crear" className="nav-link" onClick={handleNavClick}>
             ➕ Crear Viaje
           </Link>
-          <Link to="/mis-viajes" className="nav-link">
+          <Link to="/mis-viajes" className="nav-link" onClick={handleNavClick}>
             🗺️ Mis Viajes
           </Link>
-          <Link to="/viajes" className="nav-link">
+          <Link to="/viajes" className="nav-link" onClick={handleNavClick}>
             🚗 Viajes Disponibles
           </Link>
-          <Link to="/mis-reservas" className="nav-link active">
+          <Link to="/mis-reservas" className="nav-link active" onClick={handleNavClick}>
             📋 Mis Reservas (Hoy)
           </Link>
-          <Link to="/mis-vehiculos" className="nav-link">
+          <Link to="/mis-vehiculos" className="nav-link" onClick={handleNavClick}>
             🚙 Mis Vehículos
           </Link>
-          <Link to="/perfil" className="nav-link">
+          <Link to="/perfil" className="nav-link" onClick={handleNavClick}>
             👤 Mi Perfil
           </Link>
         </nav>
@@ -205,7 +211,7 @@ const MisReservas = () => {
             <div className="no-results">
               <h3>No tienes reservas para hoy</h3>
               <p>¡Explora los viajes disponibles para el día de hoy y haz tu primera reserva!</p>
-              <Link to="/viajes" className="btn-primary" style={{marginTop: '1rem'}}>
+              <Link to="/viajes" className="btn-success" style={{marginTop: '1rem'}}>
                 Ver Viajes Disponibles
               </Link>
             </div>

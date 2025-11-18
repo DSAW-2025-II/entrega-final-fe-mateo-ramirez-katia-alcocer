@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import authService from '../services/auth.service.js';
 import viajeService from '../services/viaje.service.js';
+import { getImageUrl } from '../utils/imageUtils.js';
 import ReservarViaje from './ReservarViaje.jsx';
 import DetallesViaje from './DetallesViaje.jsx';
 import UserInfo from './UserInfo.jsx';
 import UbicacionSelector from './UbicacionSelector.jsx';
 import '../App.css';
 
-const ListaViajes = () => {
+const ListaViajes = ({ isMobileMenuOpen, onCloseMobileMenu }) => {
   const [viajes, setViajes] = useState([]);
   const [viajesFiltrados, setViajesFiltrados] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -216,24 +217,30 @@ const ListaViajes = () => {
     );
   }
 
+  const handleNavClick = () => {
+    if (onCloseMobileMenu) {
+      onCloseMobileMenu();
+    }
+  };
+
   return (
     <div className="layout">
-      <aside className="sidebar">
+      <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
         <div className="logo">
           <h2>Wheels</h2>
         </div>
           
           <nav>
-            <Link to="/menu" className="nav-link">
+            <Link to="/menu" className="nav-link" onClick={handleNavClick}>
               🏠 Inicio
             </Link>
-            <Link to="/viajes" className="nav-link active">
+            <Link to="/viajes" className="nav-link active" onClick={handleNavClick}>
               🚗 Viajes Disponibles
             </Link>
-            <Link to="/mis-reservas" className="nav-link">
+            <Link to="/mis-reservas" className="nav-link" onClick={handleNavClick}>
               📋 Mis Reservas
             </Link>
-            <Link to="/perfil" className="nav-link">
+            <Link to="/perfil" className="nav-link" onClick={handleNavClick}>
               👤 Mi Perfil
             </Link>
           </nav>
@@ -353,7 +360,7 @@ const ListaViajes = () => {
           )}
           
           <div className="filtros-actions">
-            <button onClick={handleLimpiarFiltros} className="btn-secondary">
+            <button onClick={handleLimpiarFiltros} className="btn-warning">
               🗑️ Limpiar Filtros
             </button>
           </div>
@@ -383,36 +390,55 @@ const ListaViajes = () => {
                     <span className="viaje-precio">${viaje.tarifa.toLocaleString()}</span>
                   </div>
                   
-                  <div className="viaje-info">
-                    <div className="info-item">
-                      <span className="info-label">📅 Fecha:</span>
-                      <span>{formatearFecha(viaje.fecha_salida)}</span>
+                  <div className="viaje-content">
+                    <div className="vehiculo-image-section">
+                      {viaje.foto ? (
+                        <img 
+                          src={getImageUrl(viaje.foto)} 
+                          alt={`${viaje.marca} ${viaje.modelo}`}
+                          className="vehiculo-foto"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'flex';
+                          }}
+                        />
+                      ) : null}
+                      <div className="vehiculo-placeholder" style={{display: viaje.foto ? 'none' : 'flex'}}>
+                        🚗
+                      </div>
                     </div>
                     
-                    <div className="info-item">
-                      <span className="info-label">👤 Conductor:</span>
-                      <span>{viaje.nombre_conductor}</span>
-                    </div>
-                    
-                    <div className="info-item">
-                      <span className="info-label">🚗 Vehículo:</span>
-                      <span>{viaje.marca} {viaje.modelo}</span>
-                    </div>
-                    
-                    <div className="info-item">
-                      <span className="info-label">🪑 Cupos:</span>
-                      <span>{viaje.cupos_disponibles} de {viaje.cupos_totales} disponibles</span>
-                    </div>
+                    <div className="viaje-info">
+                      <div className="info-item">
+                        <span className="info-label">📅 Fecha:</span>
+                        <span>{formatearFecha(viaje.fecha_salida)}</span>
+                      </div>
+                      
+                      <div className="info-item">
+                        <span className="info-label">👤 Conductor:</span>
+                        <span>{viaje.nombre_conductor}</span>
+                      </div>
+                      
+                      <div className="info-item">
+                        <span className="info-label">🚗 Vehículo:</span>
+                        <span>{viaje.marca} {viaje.modelo}</span>
+                      </div>
+                      
+                      <div className="info-item">
+                        <span className="info-label">🪑 Cupos:</span>
+                        <span>{viaje.cupos_disponibles} de {viaje.cupos_totales} disponibles</span>
+                      </div>
 
-                    <div className="info-item">
-                      <span className="info-label">📊 Estado:</span>
-                      <span className="estado-viaje">{getEstadoViaje(viaje)}</span>
+                      <div className="info-item">
+                        <span className="info-label">📊 Estado:</span>
+                        <span className="estado-viaje">{getEstadoViaje(viaje)}</span>
+                      </div>
                     </div>
                   </div>
                   
                   <div className="viaje-actions">
                     <button 
-                      className="btn-secondary"
+                      className="btn-primary"
                       onClick={() => handleVerDetalles(viaje)}
                     >
                       👁️ Ver Detalles
@@ -420,7 +446,7 @@ const ListaViajes = () => {
                     
                     {puedeReservar(viaje) ? (
                       <button 
-                        className="btn-primary"
+                        className="btn-success"
                         onClick={() => handleReservarViaje(viaje)}
                       >
                         🚗 Reservar Cupo

@@ -7,7 +7,7 @@ import UbicacionSelector from './UbicacionSelector.jsx';
 import UserInfo from './UserInfo.jsx';
 import '../App.css';
 
-const CrearViaje = () => {
+const CrearViaje = ({ isMobileMenuOpen, onCloseMobileMenu }) => {
   const [formData, setFormData] = useState({
     origen: '',
     destino: '',
@@ -177,30 +177,36 @@ const CrearViaje = () => {
     setLoading(false);
   };
 
+  const handleNavClick = () => {
+    if (onCloseMobileMenu) {
+      onCloseMobileMenu();
+    }
+  };
+
       return (
         <div className="layout">
-          <aside className="sidebar">
+          <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
             <div className="logo">
               <h2>Wheels</h2>
             </div>
           
           <nav>
-            <Link to="/menu" className="nav-link">
+            <Link to="/menu" className="nav-link" onClick={handleNavClick}>
               🏠 Inicio
             </Link>
-            <Link to="/viajes/crear" className="nav-link active">
+            <Link to="/viajes/crear" className="nav-link active" onClick={handleNavClick}>
               ➕ Crear Viaje
             </Link>
-            <Link to="/mis-viajes" className="nav-link">
+            <Link to="/mis-viajes" className="nav-link" onClick={handleNavClick}>
               🗺️ Mis Viajes
             </Link>
-            <Link to="/viajes" className="nav-link">
+            <Link to="/viajes" className="nav-link" onClick={handleNavClick}>
               🚗 Viajes Disponibles
             </Link>
-            <Link to="/mis-reservas" className="nav-link">
+            <Link to="/mis-reservas" className="nav-link" onClick={handleNavClick}>
               📋 Mis Reservas
             </Link>
-            <Link to="/perfil" className="nav-link">
+            <Link to="/perfil" className="nav-link" onClick={handleNavClick}>
               👤 Mi Perfil
             </Link>
           </nav>
@@ -219,7 +225,7 @@ const CrearViaje = () => {
             <div className="no-results">
               <h3>No tienes vehículos registrados</h3>
               <p>Registra un vehículo primero para crear viajes</p>
-              <button onClick={() => navigate('/registrar-vehiculo')} className="btn-primary" style={{marginTop: '1rem'}}>
+              <button onClick={() => navigate('/registrar-vehiculo')} className="btn-success" style={{marginTop: '1rem'}}>
                 Registrar Vehículo
               </button>
             </div>
@@ -320,13 +326,13 @@ const CrearViaje = () => {
           </div>
           
           <div className="form-actions">
-            <button type="button" onClick={() => navigate('/registrar-vehiculo')} className="btn-secondary">
+            <button type="button" onClick={() => navigate('/registrar-vehiculo')} className="btn-success">
               ➕ Añadir Vehículo
             </button>
-            <button type="button" onClick={() => navigate('/menu-conductor')} className="btn-secondary">
+            <button type="button" onClick={() => navigate('/menu-conductor')} className="btn-danger">
               Cancelar
             </button>
-            <button type="submit" className="btn-primary" disabled={loading || vehiculos.length === 0}>
+            <button type="submit" className="btn-success" disabled={loading || vehiculos.length === 0}>
               {loading ? 'Creando viaje...' : 'Crear Viaje'}
             </button>
           </div>

@@ -5,7 +5,7 @@ import vehiculoService from '../services/vehiculo.service.js';
 import UserInfo from './UserInfo.jsx';
 import '../App.css';
 
-const RegistrarVehiculo = () => {
+const RegistrarVehiculo = ({ isMobileMenuOpen, onCloseMobileMenu }) => {
   const [formData, setFormData] = useState({
     placa: '',
     marca: '',
@@ -81,24 +81,30 @@ const RegistrarVehiculo = () => {
     setLoading(false);
   };
 
+  const handleNavClick = () => {
+    if (onCloseMobileMenu) {
+      onCloseMobileMenu();
+    }
+  };
+
   return (
     <div className="layout">
-        <aside className="sidebar">
+        <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
           <div className="logo">
             <h2>Wheels</h2>
           </div>
           
           <nav>
-            <Link to="/menu" className="nav-link">
+            <Link to="/menu" className="nav-link" onClick={handleNavClick}>
               🏠 Inicio
             </Link>
-            <Link to="/viajes" className="nav-link">
+            <Link to="/viajes" className="nav-link" onClick={handleNavClick}>
               🚗 Viajes Disponibles
             </Link>
-            <Link to="/mis-reservas" className="nav-link">
+            <Link to="/mis-reservas" className="nav-link" onClick={handleNavClick}>
               📋 Mis Reservas
             </Link>
-            <Link to="/perfil" className="nav-link">
+            <Link to="/perfil" className="nav-link" onClick={handleNavClick}>
               👤 Mi Perfil
             </Link>
           </nav>
@@ -221,12 +227,12 @@ const RegistrarVehiculo = () => {
 
             <div className="form-actions">
               <button type="button" 
-                className="btn-secondary"
+                className="btn-danger"
                 onClick={() => navigate('/menu')}
               >
                 Cancelar
               </button>
-              <button type="submit" className="btn-primary" disabled={loading}>
+              <button type="submit" className="btn-success" disabled={loading}>
                 {loading ? 'Registrando...' : 'Registrar Vehículo'}
               </button>
             </div>
