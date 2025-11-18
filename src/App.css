@@ -1389,7 +1389,7 @@ nav {
     padding: 1rem;
     margin-left: 0;
     width: 100%;
-    padding-top: 4rem; /* Espacio para la barra superior */
+    padding-top: 5.5rem; /* Espacio para el botón hamburguesa (top: 1rem + height: 50px + margen) */
   }
   
   .mobile-menu-btn {
@@ -1605,6 +1605,7 @@ nav {
   }
   
   .main-content {
+    padding-top: 5.5rem !important; /* Espacio para el botón hamburguesa */
     padding-bottom: 4rem; /* Menos espacio para pantallas pequeñas */
   }
   
@@ -1692,6 +1693,7 @@ nav {
   
   .main-content {
     padding: 0.5rem;
+    padding-top: 5.5rem !important; /* Espacio para el botón hamburguesa */
   }
   
   .mobile-menu-btn {
